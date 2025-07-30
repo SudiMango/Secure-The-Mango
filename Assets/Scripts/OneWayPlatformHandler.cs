@@ -5,7 +5,10 @@ using UnityEngine.InputSystem;
 public class OneWayPlatformHandler : MonoBehaviour
 {
 
+    [Header("References")]
     [SerializeField] private BoxCollider2D playerCollider;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundLayer;
 
     private GameObject currOneWayPlatform = null;
 
@@ -32,26 +35,26 @@ public class OneWayPlatformHandler : MonoBehaviour
         platformDown.Disable();
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private bool isOnPlatform()
     {
-        if (collision.gameObject.CompareTag("OneWayPlatform"))
+        Collider2D hit = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        if (hit != null && hit.CompareTag("OneWayPlatform"))
         {
-            currOneWayPlatform = collision.gameObject;
+            currOneWayPlatform = hit.gameObject;
+            return true;
         }
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("OneWayPlatform"))
+        else
         {
             currOneWayPlatform = null;
+            return false;
         }
     }
 
     // EFFECTS: makes player go down from platform when down input action is performed
     private void onPlatformDown(InputAction.CallbackContext context)
     {
-        if (currOneWayPlatform != null)
+        bool canProceed = isOnPlatform();
+        if (canProceed)
         {
             StartCoroutine(DisableOneWayPlatformCollision());
         }

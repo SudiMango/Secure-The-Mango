@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundLayer;
 
     [Header("Movement settings")]
     [SerializeField] private float moveSpeed = 5f;
@@ -15,9 +17,7 @@ public class PlayerController : MonoBehaviour
     [Header("Jump settings")]
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private float doubleJumpMultiplier = 0.7f;
-    private bool isGrounded = true;
     private bool canDoubleJump = false;
-
 
     [Header("Dash settings")]
     [SerializeField] private float dashForce = 10f;
@@ -92,34 +92,18 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocityX = moveDir.x * moveSpeed;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.layer == 6)
-        {
-            isGrounded = true;
-        }
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.layer == 6)
-        {
-            isGrounded = false;
-        }
-    }
-
     // MODIFIES: rb
     // EFFECTS: makes the player jump when jump input action is performed
     private void onJump(InputAction.CallbackContext context)
     {
         if (isDashing) return;
 
-        if (isGrounded)
+        if (isGrounded())
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             canDoubleJump = true;
         }
-        else if (!isGrounded && canDoubleJump)
+        else if (!isGrounded() && canDoubleJump)
         {
             rb.AddForce(Vector2.up * jumpForce * doubleJumpMultiplier, ForceMode2D.Impulse);
             canDoubleJump = false;
@@ -133,6 +117,11 @@ public class PlayerController : MonoBehaviour
         if (!canDash) return;
 
         StartCoroutine(Dash());
+    }
+
+    private bool isGrounded()
+    {
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
 
     // MODIFIES: self, rb

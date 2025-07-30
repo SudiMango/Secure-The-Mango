@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour
 
     // Other
     private GameObject currOneWayPlatform = null;
+    Vector3 mousePos = Vector3.zero;
+    private bool facingRight = true;
 
     void Awake()
     {
@@ -72,13 +74,28 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isDashing) return;
+
+        // Getting movement direction
         moveDir = move.ReadValue<Vector2>();
+
+        // Making character look at the correct side
+        mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        if (mousePos.x < transform.position.x && facingRight)
+        {
+            flip();
+        }
+        else if (mousePos.x > transform.position.x && !facingRight)
+        {
+            flip();
+        }
     }
 
     void FixedUpdate()
     {
         if (isDashing) return;
 
+        // Move character
         rb.linearVelocityX = moveDir.x * moveSpeed;
     }
 
@@ -180,5 +197,15 @@ public class PlayerController : MonoBehaviour
             return -1;
         }
         return 1;
+    }
+
+    // MODIFIES: transform.localScale
+    // EFFECTS: flips the character on the x-axis
+    private void flip()
+    {
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1;
+        transform.localScale = localScale;
+        facingRight = !facingRight;
     }
 }

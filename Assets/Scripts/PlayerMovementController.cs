@@ -105,7 +105,16 @@ public class PlayerController : MonoBehaviour
         if (isDashing) return;
 
         // Move character
-        rb.linearVelocityX = moveDir.x * moveSpeed;
+        float unitDir = 0;
+        if (moveDir.x > 0)
+        {
+            unitDir = 1;
+        }
+        else if (moveDir.x < 0)
+        {
+            unitDir = -1;
+        }
+        rb.linearVelocityX = unitDir * moveSpeed;
     }
 
     #endregion

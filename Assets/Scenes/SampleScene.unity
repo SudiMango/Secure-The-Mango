@@ -384,7 +384,7 @@ GameObject:
   - component: {fileID: 709702029}
   - component: {fileID: 709702028}
   - component: {fileID: 709702030}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -518,7 +518,7 @@ GameObject:
   - component: {fileID: 851824797}
   - component: {fileID: 851824796}
   - component: {fileID: 851824798}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -820,6 +820,10 @@ MonoBehaviour:
   rb: {fileID: 1483368239}
   moveSpeed: 5
   jumpForce: 12
+  doubleJumpMultiplier: 0.75
+  dashForce: 18
+  dashTime: 0.2
+  dashCooldown: 1.5
 --- !u!114 &1483368244
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -35,6 +35,12 @@ public class PlayerController : MonoBehaviour
     private bool isWallSliding = false;
     private float wallSlidingSpeed = 2f;
 
+    // Wall jumping
+    private bool isWallJumping = false;
+    private float wallJumpDir;
+    private float wallJumpDuration = 0.4f;
+    private Vector2 wallJumpPower = new Vector2(8f, 16f);
+
     // Player controls
     private PlayerInputActions playerControls;
     private InputAction move;
@@ -87,17 +93,23 @@ public class PlayerController : MonoBehaviour
 
         // Making character look at the correct side
         mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        if (mousePos.x < transform.position.x && facingRight)
+        if (!isWallJumping)
         {
-            flip();
-        }
-        else if (mousePos.x > transform.position.x && !facingRight)
-        {
-            flip();
+            if (mousePos.x < transform.position.x && facingRight)
+            {
+                flip();
+            }
+            else if (mousePos.x > transform.position.x && !facingRight)
+            {
+                flip();
+            }
         }
 
         // Constantly check for wall slide and do it if applicable
         wallSlide();
+
+        // Constantly check for wall jump and do it if applicable
+        wallJump();
     }
 
     void FixedUpdate()
@@ -114,7 +126,10 @@ public class PlayerController : MonoBehaviour
         {
             unitDir = -1;
         }
-        rb.linearVelocityX = unitDir * moveSpeed;
+        if (!isWallJumping)
+        {
+            rb.linearVelocityX = unitDir * moveSpeed;
+        }
     }
 
     #endregion
@@ -135,8 +150,8 @@ public class PlayerController : MonoBehaviour
         return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer);
     }
 
-    // EFFECTS: returns the dash direction based on player's x localscale
-    private int getDashDir()
+    // EFFECTS: returns the direction based on player's x localscale
+    private int getDir()
     {
         if (gameObject.transform.localScale.x < 0)
         {
@@ -159,21 +174,37 @@ public class PlayerController : MonoBehaviour
 
     #region Movement related functions
 
-    // MODIFIES: rb
+    // MODIFIES: self, rb
     // EFFECTS: makes the player jump when jump input action is performed
     private void onJump(InputAction.CallbackContext context)
     {
         if (isDashing) return;
 
-        if (isGrounded())
+        // Normal jumping and double jumping
+        if (isGrounded() && !isWallSliding && !isWallJumping)
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             canDoubleJump = true;
         }
-        else if (!isGrounded() && canDoubleJump)
+        else if (!isGrounded() && canDoubleJump && !isWallSliding && !isWallJumping)
         {
             rb.AddForce(Vector2.up * jumpForce * doubleJumpMultiplier, ForceMode2D.Impulse);
             canDoubleJump = false;
+        }
+
+        // Wall jumping
+        if (isWallSliding)
+        {
+            isWallJumping = true;
+            rb.linearVelocity = new Vector2(wallJumpDir * wallJumpPower.x, wallJumpPower.y);
+            canDoubleJump = false;
+
+            if (transform.localScale.x != wallJumpDir)
+            {
+                flip();
+            }
+
+            Invoke(nameof(stopWallJump), wallJumpDuration);
         }
     }
 
@@ -184,6 +215,22 @@ public class PlayerController : MonoBehaviour
         if (!canDash) return;
 
         StartCoroutine(Dash());
+    }
+
+    // MODIFIES: self, rb
+    // EFFECTS: performs dash action
+    private IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        rb.linearVelocity = new Vector2(getDir() * dashForce, 0);
+        float prevGravityScale = rb.gravityScale;
+        rb.gravityScale = 0;
+        yield return new WaitForSeconds(dashTime);
+        isDashing = false;
+        rb.gravityScale = prevGravityScale;
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
     }
 
     // MODIFIES: self, rb
@@ -201,20 +248,24 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // MODIFIES: self, rb
-    // EFFECTS: performs dash action
-    private IEnumerator Dash()
+    // MODIFIES: self
+    // EFFECTS: allows player to wall jump
+    private void wallJump()
     {
-        canDash = false;
-        isDashing = true;
-        rb.linearVelocity = new Vector2(getDashDir() * dashForce, 0);
-        float prevGravityScale = rb.gravityScale;
-        rb.gravityScale = 0;
-        yield return new WaitForSeconds(dashTime);
-        isDashing = false;
-        rb.gravityScale = prevGravityScale;
-        yield return new WaitForSeconds(dashCooldown);
-        canDash = true;
+        if (isWallSliding)
+        {
+            isWallJumping = false;
+            wallJumpDir = -getDir();
+
+            CancelInvoke(nameof(stopWallJump));
+        }
+    }
+
+    // MODIFIES: self
+    // EFFECTS: cancels wall jump
+    private void stopWallJump()
+    {
+        isWallJumping = false;
     }
 
     #endregion

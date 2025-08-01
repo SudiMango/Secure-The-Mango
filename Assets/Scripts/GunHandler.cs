@@ -1,5 +1,7 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class GunHandler : MonoBehaviour
 {
@@ -7,9 +9,12 @@ public class GunHandler : MonoBehaviour
 
     [Header("Basic info")]
     [SerializeField] private string gunName;
-    [SerializeField] private bool isAuto = false;
     [SerializeField] private float timeBetweenFire;
     [SerializeField] private float damage;
+
+    [Header("Instancing info")]
+    [SerializeField] private Vector3 pos = new Vector3(0, 0, 0);
+    [SerializeField] private Vector3 rot = new Vector3(0, 0, 0);
 
     [Header("Ammo related")]
     [SerializeField] private int currentAmmo;
@@ -18,13 +23,19 @@ public class GunHandler : MonoBehaviour
     [SerializeField] private float timeToReload;
 
     [Header("References")]
+    [SerializeField] private GameObject weaponInfoGui;
     [SerializeField] private GameObject bullet;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private Transform bulletParent;
+    private Transform bulletParent;
 
     // Other required variables
+    private bool isReloading = false;
     private float shootTimer = 0f;
     private float reloadTimer = 0f;
+
+    private Transform magazineText;
+    private Transform totalAmmoText;
+    private Transform reloadSlider;
 
     // Input
     private PlayerInputActions playerControls;
@@ -50,8 +61,6 @@ public class GunHandler : MonoBehaviour
         reload.Enable();
 
         fire.started += onFireStarted;
-        fire.canceled += onFireEnded;
-
         reload.started += onReload;
     }
 
@@ -66,51 +75,102 @@ public class GunHandler : MonoBehaviour
     {
         currentAmmo = magazineCapacity;
         shootTimer = timeBetweenFire;
+
+        bulletParent = GameObject.Find("FX").transform;
+
+        // Weapon info UI
+        GameObject ui = Instantiate(weaponInfoGui, GameObject.Find("Canvas").transform);
+
+        magazineText = ui.transform.Find("Magazine");
+        totalAmmoText = ui.transform.Find("TotalAmmo");
+        reloadSlider = ui.transform.Find("ReloadSlider");
     }
 
     void Update()
     {
         shootTimer += Time.deltaTime;
+
+        // Set weapon info UI values
+        magazineText.GetComponent<Text>().text = currentAmmo + "/" + magazineCapacity;
+        totalAmmoText.GetComponent<Text>().text = totalAmmo.ToString();
+
+        if (isReloading)
+        {
+            reloadTimer += Time.deltaTime;
+            reloadSlider.GetComponent<Slider>().value = reloadTimer / timeToReload;
+        }
     }
 
     #endregion
 
     #region InputAction callback functions
 
+    // MODIFIES: self
+    // EFFECTS: callback function for when player tries to shoot their weapon
     private void onFireStarted(InputAction.CallbackContext context)
     {
-        if (shootTimer >= timeBetweenFire && currentAmmo > 0)
+        if (shootTimer >= timeBetweenFire && currentAmmo > 0 && !isReloading)
         {
             shootTimer = 0;
             shoot();
         }
     }
 
-    private void onFireEnded(InputAction.CallbackContext context)
-    {
-        print("Fire ended");
-    }
-
+    // MODIFIES: self
+    // EFFECTS: callback function for when player tries to reload their weapon
     private void onReload(InputAction.CallbackContext context)
     {
-        print("Reloading!");
+        if (isReloading || currentAmmo >= magazineCapacity || totalAmmo <= 0) return;
+
+        StartCoroutine(StartReload());
     }
 
     #endregion
 
     #region Custom functions
 
+    // MODIFIES: self, bullet
+    // EFFECTS: shoots bullet out of gun
     private void shoot()
     {
         GameObject t_bullet = Instantiate(bullet, firePoint.position, firePoint.rotation, bulletParent);
         BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
         bh.setEnemyTag("Enemy");
         bh.setDamage(damage);
+
+        currentAmmo -= 1;
     }
 
-    private void cancelReload()
+    // MODIFIES: self
+    // EFFECTS: reloads weapon magazine
+    private IEnumerator StartReload()
     {
-        print("Cancelled reload!");
+        reloadTimer = 0;
+        reloadSlider.GetComponent<Slider>().value = 0;
+        isReloading = true;
+        yield return new WaitForSeconds(timeToReload);
+        reloadTimer = 0;
+        reloadSlider.GetComponent<Slider>().value = 0;
+        isReloading = false;
+        if (magazineCapacity - currentAmmo <= totalAmmo)
+        {
+            int ammoToAdd = magazineCapacity - currentAmmo;
+            currentAmmo += ammoToAdd;
+            totalAmmo -= ammoToAdd;
+        }
+        else
+        {
+            currentAmmo += totalAmmo;
+            totalAmmo = 0;
+        }
+    }
+
+    // MODIFIES: self
+    // EFFECTS: cancels reload
+    public void cancelReload()
+    {
+        StopCoroutine(StartReload());
+        isReloading = false;
     }
 
     #endregion

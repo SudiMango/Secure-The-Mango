@@ -66,6 +66,7 @@ public class BulletHandler : MonoBehaviour
     // EFFECTS: damages enemy by certain amount
     private void damageEnemy(GameObject enemy)
     {
-        print("damaging enemy... " + enemy.name);
+        Health h = enemy.GetComponent<Health>();
+        h.setCurrentHealth(h.getCurrentHealth() - damage);
     }
 }

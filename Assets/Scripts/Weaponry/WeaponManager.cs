@@ -5,6 +5,7 @@ public class WeaponManager : MonoBehaviour
     public static WeaponManager Instance;
 
     public GameObject bulletPrefab;
+    public Transform bulletParent;
     public GameObject weaponInfoGuiPrefab;
     public int totalAmmo;
 

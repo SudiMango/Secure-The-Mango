@@ -3,30 +3,31 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class GunHandler : MonoBehaviour
+public abstract class Gun : MonoBehaviour
 {
     #region Variables
 
     [Header("References")]
-    [SerializeField] private WeaponDataScriptableObject data;
-    [SerializeField] private Transform firePoint;
+    [SerializeField] protected WeaponDataScriptableObject data;
+    [SerializeField] protected Transform firePoint;
 
     // Other required variables
-    private int currentAmmo;
-    private bool isReloading = false;
-    private float shootTimer = 0f;
-    private float reloadTimer = 0f;
+    protected int currentAmmo;
+    protected bool isReloading = false;
+    protected float shootTimer = 0f;
+    protected float reloadTimer = 0f;
 
-    private Transform bulletParent;
 
-    private Transform magazineText;
-    private Transform totalAmmoText;
-    private Transform reloadSlider;
+    // UI
+    protected Transform magazineText;
+    protected Transform totalAmmoText;
+    protected Transform reloadSlider;
 
     // Input
-    private PlayerInputActions playerControls;
-    private InputAction fire;
-    private InputAction reload;
+    protected PlayerInputActions playerControls;
+    protected InputAction primaryFire;
+    protected InputAction secondaryFire;
+    protected InputAction reload;
 
     #endregion
 
@@ -40,20 +41,24 @@ public class GunHandler : MonoBehaviour
     // Enable player input systems
     void OnEnable()
     {
-        fire = playerControls.Player.Attack;
+        primaryFire = playerControls.Player.PrimaryFire;
+        secondaryFire = playerControls.Player.SecondaryFire;
         reload = playerControls.Player.Reload;
 
-        fire.Enable();
+        primaryFire.Enable();
+        secondaryFire.Enable();
         reload.Enable();
 
-        fire.started += onFireStarted;
+        primaryFire.started += onPrimaryFireStarted;
+        secondaryFire.started += onSecondaryFireStarted;
         reload.started += onReload;
     }
 
     // Disable player input systems
     void OnDisable()
     {
-        fire.Disable();
+        primaryFire.Disable();
+        secondaryFire.Disable();
         reload.Disable();
     }
 
@@ -62,14 +67,16 @@ public class GunHandler : MonoBehaviour
         currentAmmo = data.magazineCapacity;
         shootTimer = data.timeBetweenFire;
 
-        bulletParent = GameObject.Find("FX").transform;
-
         // Weapon info UI
         GameObject ui = Instantiate(WeaponManager.Instance.weaponInfoGuiPrefab, GameObject.Find("Canvas").transform);
 
         magazineText = ui.transform.Find("Magazine");
         totalAmmoText = ui.transform.Find("TotalAmmo");
         reloadSlider = ui.transform.Find("ReloadSlider");
+
+        // Set weapon info UI values
+        magazineText.GetComponent<Text>().text = currentAmmo + "/" + data.magazineCapacity;
+        totalAmmoText.GetComponent<Text>().text = WeaponManager.Instance.totalAmmo.ToString();
     }
 
     void Update()
@@ -77,9 +84,6 @@ public class GunHandler : MonoBehaviour
         shootTimer += Time.deltaTime;
 
         // Set weapon info UI values
-        magazineText.GetComponent<Text>().text = currentAmmo + "/" + data.magazineCapacity;
-        totalAmmoText.GetComponent<Text>().text = WeaponManager.Instance.totalAmmo.ToString();
-
         if (isReloading)
         {
             reloadTimer += Time.deltaTime;
@@ -93,13 +97,19 @@ public class GunHandler : MonoBehaviour
 
     // MODIFIES: self
     // EFFECTS: callback function for when player tries to shoot their weapon
-    private void onFireStarted(InputAction.CallbackContext context)
+    private void onPrimaryFireStarted(InputAction.CallbackContext context)
     {
         if (shootTimer >= data.timeBetweenFire && currentAmmo > 0 && !isReloading)
         {
             shootTimer = 0;
-            shoot();
+            onPrimaryFire();
+            magazineText.GetComponent<Text>().text = currentAmmo + "/" + data.magazineCapacity;
         }
+    }
+
+    private void onSecondaryFireStarted(InputAction.CallbackContext context)
+    {
+        onSecondaryFire();
     }
 
     // MODIFIES: self
@@ -116,16 +126,12 @@ public class GunHandler : MonoBehaviour
     #region Custom functions
 
     // MODIFIES: self, bullet
-    // EFFECTS: shoots bullet out of gun
-    private void shoot()
-    {
-        GameObject t_bullet = Instantiate(WeaponManager.Instance.bulletPrefab, firePoint.position, firePoint.rotation, bulletParent);
-        BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
-        bh.setEnemyTag("Enemy");
-        bh.setDamage(data.damage);
+    // EFFECTS: primary method of fire
+    protected abstract void onPrimaryFire();
 
-        currentAmmo -= 1;
-    }
+    // MODIFIES: self, bullet
+    // EFFECTS: secondary method of fire
+    protected abstract void onSecondaryFire();
 
     // MODIFIES: self
     // EFFECTS: reloads weapon magazine
@@ -149,6 +155,8 @@ public class GunHandler : MonoBehaviour
             currentAmmo += WeaponManager.Instance.totalAmmo;
             WeaponManager.Instance.totalAmmo = 0;
         }
+        magazineText.GetComponent<Text>().text = currentAmmo + "/" + data.magazineCapacity;
+        totalAmmoText.GetComponent<Text>().text = WeaponManager.Instance.totalAmmo.ToString();
     }
 
     // MODIFIES: self

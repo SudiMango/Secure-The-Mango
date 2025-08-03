@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class BulletHandler : MonoBehaviour
 {
@@ -8,8 +7,7 @@ public class BulletHandler : MonoBehaviour
     private string enemyTag;
 
     // Bullet settings
-    [SerializeField] private float speed = 5f;
-    private Vector2 dir;
+    private float speed;
     private float damage;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -18,12 +16,8 @@ public class BulletHandler : MonoBehaviour
         // Get rigidbody of bullet
         rb = GetComponent<Rigidbody2D>();
 
-        // Get direction of bullet's travel
-        dir = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue()) - transform.position;
-        dir.Normalize();
-
         // Set bullet speed
-        rb.linearVelocity = dir * speed;
+        rb.linearVelocity = transform.right * speed * getDir();
 
         // Destroy self after some time
         Destroy(gameObject, 5);
@@ -62,11 +56,28 @@ public class BulletHandler : MonoBehaviour
         this.damage = damage;
     }
 
+    // MODIFIES: self
+    // EFFECTS: sets the speed the bullet should travel in
+    public void setSpeed(float speed)
+    {
+        this.speed = speed;
+    }
+
     // MODIFIES: enemy
     // EFFECTS: damages enemy by certain amount
     private void damageEnemy(GameObject enemy)
     {
         Health h = enemy.GetComponent<Health>();
         h.setCurrentHealth(h.getCurrentHealth() - damage);
+    }
+
+    // EFFECTS: returns the direction based on player's x localscale
+    private int getDir()
+    {
+        if (GameObject.Find("Player").transform.localScale.x < 0)
+        {
+            return -1;
+        }
+        return 1;
     }
 }

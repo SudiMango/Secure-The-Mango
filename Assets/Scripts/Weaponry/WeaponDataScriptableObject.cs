@@ -7,6 +7,7 @@ public class WeaponDataScriptableObject : ScriptableObject
     public string weaponName;
     public float timeBetweenFire;
     public float damage;
+    public float bulletSpeed;
 
     [Header("Ammo related")]
     [SerializeField] public int magazineCapacity;

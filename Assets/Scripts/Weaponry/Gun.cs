@@ -68,7 +68,7 @@ public abstract class Gun : MonoBehaviour
         shootTimer = data.timeBetweenFire;
 
         // Weapon info UI
-        GameObject ui = Instantiate(WeaponManager.Instance.weaponInfoGuiPrefab, GameObject.Find("Canvas").transform);
+        GameObject ui = Instantiate(WeaponManager.Instance.weaponInfoGuiPrefab, GameObject.Find("MainCanvas").transform);
 
         magazineText = ui.transform.Find("Magazine");
         totalAmmoText = ui.transform.Find("TotalAmmo");

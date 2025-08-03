@@ -7,31 +7,17 @@ public class GunHandler : MonoBehaviour
 {
     #region Variables
 
-    [Header("Basic info")]
-    [SerializeField] private string gunName;
-    [SerializeField] private float timeBetweenFire;
-    [SerializeField] private float damage;
-
-    [Header("Instancing info")]
-    [SerializeField] private Vector3 pos = new Vector3(0, 0, 0);
-    [SerializeField] private Vector3 rot = new Vector3(0, 0, 0);
-
-    [Header("Ammo related")]
-    [SerializeField] private int currentAmmo;
-    [SerializeField] private int magazineCapacity;
-    [SerializeField] private int totalAmmo;
-    [SerializeField] private float timeToReload;
-
     [Header("References")]
-    [SerializeField] private GameObject weaponInfoGui;
-    [SerializeField] private GameObject bullet;
+    [SerializeField] private WeaponDataScriptableObject data;
     [SerializeField] private Transform firePoint;
-    private Transform bulletParent;
 
     // Other required variables
+    private int currentAmmo;
     private bool isReloading = false;
     private float shootTimer = 0f;
     private float reloadTimer = 0f;
+
+    private Transform bulletParent;
 
     private Transform magazineText;
     private Transform totalAmmoText;
@@ -73,13 +59,13 @@ public class GunHandler : MonoBehaviour
 
     void Start()
     {
-        currentAmmo = magazineCapacity;
-        shootTimer = timeBetweenFire;
+        currentAmmo = data.magazineCapacity;
+        shootTimer = data.timeBetweenFire;
 
         bulletParent = GameObject.Find("FX").transform;
 
         // Weapon info UI
-        GameObject ui = Instantiate(weaponInfoGui, GameObject.Find("Canvas").transform);
+        GameObject ui = Instantiate(WeaponManager.Instance.weaponInfoGuiPrefab, GameObject.Find("Canvas").transform);
 
         magazineText = ui.transform.Find("Magazine");
         totalAmmoText = ui.transform.Find("TotalAmmo");
@@ -91,13 +77,13 @@ public class GunHandler : MonoBehaviour
         shootTimer += Time.deltaTime;
 
         // Set weapon info UI values
-        magazineText.GetComponent<Text>().text = currentAmmo + "/" + magazineCapacity;
-        totalAmmoText.GetComponent<Text>().text = totalAmmo.ToString();
+        magazineText.GetComponent<Text>().text = currentAmmo + "/" + data.magazineCapacity;
+        totalAmmoText.GetComponent<Text>().text = WeaponManager.Instance.totalAmmo.ToString();
 
         if (isReloading)
         {
             reloadTimer += Time.deltaTime;
-            reloadSlider.GetComponent<Slider>().value = reloadTimer / timeToReload;
+            reloadSlider.GetComponent<Slider>().value = reloadTimer / data.timeToReload;
         }
     }
 
@@ -109,7 +95,7 @@ public class GunHandler : MonoBehaviour
     // EFFECTS: callback function for when player tries to shoot their weapon
     private void onFireStarted(InputAction.CallbackContext context)
     {
-        if (shootTimer >= timeBetweenFire && currentAmmo > 0 && !isReloading)
+        if (shootTimer >= data.timeBetweenFire && currentAmmo > 0 && !isReloading)
         {
             shootTimer = 0;
             shoot();
@@ -120,7 +106,7 @@ public class GunHandler : MonoBehaviour
     // EFFECTS: callback function for when player tries to reload their weapon
     private void onReload(InputAction.CallbackContext context)
     {
-        if (isReloading || currentAmmo >= magazineCapacity || totalAmmo <= 0) return;
+        if (isReloading || currentAmmo >= data.magazineCapacity || WeaponManager.Instance.totalAmmo <= 0) return;
 
         StartCoroutine(StartReload());
     }
@@ -133,10 +119,10 @@ public class GunHandler : MonoBehaviour
     // EFFECTS: shoots bullet out of gun
     private void shoot()
     {
-        GameObject t_bullet = Instantiate(bullet, firePoint.position, firePoint.rotation, bulletParent);
+        GameObject t_bullet = Instantiate(WeaponManager.Instance.bulletPrefab, firePoint.position, firePoint.rotation, bulletParent);
         BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
         bh.setEnemyTag("Enemy");
-        bh.setDamage(damage);
+        bh.setDamage(data.damage);
 
         currentAmmo -= 1;
     }
@@ -148,20 +134,20 @@ public class GunHandler : MonoBehaviour
         reloadTimer = 0;
         reloadSlider.GetComponent<Slider>().value = 0;
         isReloading = true;
-        yield return new WaitForSeconds(timeToReload);
+        yield return new WaitForSeconds(data.timeToReload);
         reloadTimer = 0;
         reloadSlider.GetComponent<Slider>().value = 0;
         isReloading = false;
-        if (magazineCapacity - currentAmmo <= totalAmmo)
+        if (data.magazineCapacity - currentAmmo <= WeaponManager.Instance.totalAmmo)
         {
-            int ammoToAdd = magazineCapacity - currentAmmo;
+            int ammoToAdd = data.magazineCapacity - currentAmmo;
             currentAmmo += ammoToAdd;
-            totalAmmo -= ammoToAdd;
+            WeaponManager.Instance.totalAmmo -= ammoToAdd;
         }
         else
         {
-            currentAmmo += totalAmmo;
-            totalAmmo = 0;
+            currentAmmo += WeaponManager.Instance.totalAmmo;
+            WeaponManager.Instance.totalAmmo = 0;
         }
     }
 

@@ -221,17 +221,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a08a9b460be0bc4591f1273c10c299d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunName: Revolver
-  timeBetweenFire: 0.5
-  damage: 40
-  pos: {x: -0.021, y: 0, z: 0}
-  rot: {x: 0, y: 0, z: 0}
+  data: {fileID: 11400000, guid: c9fc5e9d1f8f8ba418b075bb425ae7a8, type: 2}
   currentAmmo: 6
-  magazineCapacity: 6
-  totalAmmo: 24
-  timeToReload: 2.5
-  weaponInfoGui: {fileID: 7990300693389318112, guid: e5343b54c6ff2094f9f89bff3cc19dec, type: 3}
-  bullet: {fileID: 9162335236047017382, guid: ef4bc8dacc70f2c4f9bf6bdfbb5d005f, type: 3}
   firePoint: {fileID: 4502799865034781418}
 --- !u!1 &9197313866514142099
 GameObject:

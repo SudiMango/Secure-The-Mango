@@ -1,22 +1,32 @@
+using System.Collections;
 using UnityEngine;
 
 public class Revolver : Gun
 {
 
+    private float damageMultiplier = 0.7f;
+
     // MODIFIES: self, bullet
     // EFFECTS: primary method of fire, shoots 1 bullet out of gun
     protected override void onPrimaryFire()
     {
-        GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
-                                            firePoint.position,
-                                            firePoint.rotation,
-                                            WeaponManager.getInstance().bulletParent);
-        BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
-        bh.setEnemyTag("Enemy");
-        bh.setDamage(data.damage);
-        bh.setSpeed(data.bulletSpeed);
+        if (primaryTimer >= data.timeBetweenPrimaryFire && currentAmmo > 0 && !isReloading)
+        {
+            primaryTimer = 0;
 
-        currentAmmo -= 1;
+            GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
+                                                    firePoint.position,
+                                                    firePoint.rotation,
+                                                    WeaponManager.getInstance().bulletParent);
+            BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
+            bh.setEnemyTag("Enemy");
+            bh.setDamage(data.damage);
+            bh.setSpeed(data.bulletSpeed);
+
+            currentAmmo -= 1;
+
+            UIManager.getInstance().updateMagazine(currentAmmo, data.magazineCapacity);
+        }
     }
 
 
@@ -24,6 +34,37 @@ public class Revolver : Gun
     // EFFECTS: secondary method of fire, does "fan the hammer" effect on all bullets left in magazine
     protected override void onSecondaryFire()
     {
-        Debug.Log("Secondary fire");
+        if (secondaryTimer >= data.timeBetweenSecondaryFire && currentAmmo > 0 && !isReloading)
+        {
+            secondaryTimer = 0;
+            StartCoroutine(FanTheHammer());
+        }
+    }
+
+    // MODIFIES: self, bullet
+    // EFFECTS: perform "fan the hammer" effect on all bullets left in magazine, damage is reduced
+    private IEnumerator FanTheHammer()
+    {
+        inputFrozen = true;
+
+        int numRounds = currentAmmo;
+        for (int i = 0; i < numRounds; i++)
+        {
+            GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
+                                            firePoint.position,
+                                            firePoint.rotation,
+                                            WeaponManager.getInstance().bulletParent);
+            BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
+            bh.setEnemyTag("Enemy");
+            bh.setDamage((float)(data.damage * damageMultiplier));
+            bh.setSpeed(data.bulletSpeed);
+
+            currentAmmo -= 1;
+            UIManager.getInstance().updateMagazine(currentAmmo, data.magazineCapacity);
+
+            yield return new WaitForSeconds(0.25f);
+        }
+
+        inputFrozen = false;
     }
 }

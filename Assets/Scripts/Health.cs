@@ -8,10 +8,6 @@ public class Health : MonoBehaviour
     [SerializeField] private float maxHealth;
     [SerializeField] private float currentHealth;
 
-    [Space]
-
-    [SerializeField] private bool isEnemy = false;
-
     void Start()
     {
         // Set initial health values
@@ -47,15 +43,16 @@ public class Health : MonoBehaviour
         return maxHealth;
     }
 
+    // REQUIRES: attached gameobject to have tag Enemy or Player
     // MODIFIES: UIManager
     // EFFECTS: updates health UI depending on if entity is player or enemy
     private void updateUI()
     {
-        if (isEnemy)
+        if (gameObject.CompareTag("Enemy"))
         {
             transform.GetComponent<EnemyUIManager>().updateHealthBar(currentHealth, maxHealth);
         }
-        else
+        else if (gameObject.CompareTag("Player"))
         {
             UIManager.getInstance().updateHealthBar(currentHealth, maxHealth);
         }

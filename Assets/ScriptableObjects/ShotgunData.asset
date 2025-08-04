@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: ShotgunData
   m_EditorClassIdentifier: 
   weaponName: Revolver
-  timeBetweenFire: 0.35
   damage: 15
   bulletSpeed: 12
+  timeBetweenPrimaryFire: 0.35
+  timeBetweenSecondaryFire: 3
   magazineCapacity: 5
   timeToReload: 3
   pos: {x: -0.021, y: 0, z: 0}

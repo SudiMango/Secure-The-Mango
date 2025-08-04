@@ -13,7 +13,10 @@ public abstract class Gun : MonoBehaviour
     // Other required variables
     protected int currentAmmo;
     protected bool isReloading = false;
-    protected float shootTimer = 0f;
+    protected bool inputFrozen = false;
+
+    protected float primaryTimer = 0f;
+    protected float secondaryTimer = 0f;
     protected float reloadTimer = 0f;
 
     // Input
@@ -58,7 +61,8 @@ public abstract class Gun : MonoBehaviour
     void Start()
     {
         currentAmmo = data.magazineCapacity;
-        shootTimer = data.timeBetweenFire;
+        primaryTimer = data.timeBetweenPrimaryFire;
+        secondaryTimer = data.timeBetweenSecondaryFire;
 
         // Set weapon info UI values
         UIManager.getInstance().updateMagazine(currentAmmo, data.magazineCapacity);
@@ -67,7 +71,8 @@ public abstract class Gun : MonoBehaviour
 
     void Update()
     {
-        shootTimer += Time.deltaTime;
+        primaryTimer += Time.deltaTime;
+        secondaryTimer += Time.deltaTime;
 
         // Set weapon info UI values
         if (isReloading)
@@ -82,19 +87,20 @@ public abstract class Gun : MonoBehaviour
     #region InputAction callback functions
 
     // MODIFIES: self
-    // EFFECTS: callback function for when player tries to shoot their weapon
+    // EFFECTS: callback function for when player tries to shoot their primary
     private void onPrimaryFireStarted(InputAction.CallbackContext context)
     {
-        if (shootTimer >= data.timeBetweenFire && currentAmmo > 0 && !isReloading)
-        {
-            shootTimer = 0;
-            onPrimaryFire();
-            UIManager.getInstance().updateMagazine(currentAmmo, data.magazineCapacity);
-        }
+        if (inputFrozen) return;
+
+        onPrimaryFire();
     }
 
+    // MODIFIES: self
+    // EFFECTS: callback function for when player tries to shoot their secondary
     private void onSecondaryFireStarted(InputAction.CallbackContext context)
     {
+        if (inputFrozen) return;
+
         onSecondaryFire();
     }
 
@@ -103,6 +109,7 @@ public abstract class Gun : MonoBehaviour
     private void onReload(InputAction.CallbackContext context)
     {
         if (isReloading || currentAmmo >= data.magazineCapacity || WeaponManager.getInstance().totalAmmo <= 0) return;
+        if (inputFrozen) return;
 
         StartCoroutine(StartReload());
     }

@@ -6,18 +6,20 @@ public class UIManager : Singleton<UIManager>
 {
 
     // Weapon info
-    public RectTransform WeaponInfo;
+    [SerializeField] private RectTransform WeaponInfo;
     private Transform magazineText;
     private Transform totalAmmoText;
     private Transform reloadSlider;
 
     // Health
-    public RectTransform HealthPanel;
+    [SerializeField] private RectTransform HealthPanel;
     private Transform healthBar;
     private Transform healthText;
 
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake();
+
         // Fetch all sub-components
 
         magazineText = WeaponInfo.Find("Magazine");

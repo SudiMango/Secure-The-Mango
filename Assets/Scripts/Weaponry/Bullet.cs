@@ -74,7 +74,7 @@ public class BulletHandler : MonoBehaviour
     // EFFECTS: returns the direction based on player's x localscale
     private int getDir()
     {
-        if (GameObject.Find("Player").transform.localScale.x < 0)
+        if (GameObject.FindWithTag("Player").transform.localScale.x < 0)
         {
             return -1;
         }

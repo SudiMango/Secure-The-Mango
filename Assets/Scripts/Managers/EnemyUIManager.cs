@@ -7,7 +7,7 @@ public class EnemyUIManager : MonoBehaviour
     [SerializeField] public RectTransform healthPanel;
     private Transform healthBar;
 
-    private void Start()
+    private void Awake()
     {
         // Fetch all sub-components
 

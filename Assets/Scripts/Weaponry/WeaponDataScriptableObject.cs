@@ -5,9 +5,12 @@ public class WeaponDataScriptableObject : ScriptableObject
 {
     [Header("Basic info")]
     public string weaponName;
-    public float timeBetweenFire;
     public float damage;
     public float bulletSpeed;
+
+    [Header("Timings")]
+    public float timeBetweenPrimaryFire;
+    public float timeBetweenSecondaryFire;
 
     [Header("Ammo related")]
     [SerializeField] public int magazineCapacity;

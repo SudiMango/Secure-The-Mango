@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerMovementController : MonoBehaviour
 {
 
     #region Variables
@@ -50,6 +50,7 @@ public class PlayerController : MonoBehaviour
     // Other
     Vector3 mousePos = Vector3.zero;
     private bool facingRight = true;
+    public bool canMove = true;
 
     #endregion
 
@@ -115,6 +116,7 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         if (isDashing) return;
+        if (!canMove) return;
 
         // Move character
         float unitDir = 0;
@@ -179,6 +181,7 @@ public class PlayerController : MonoBehaviour
     private void onJump(InputAction.CallbackContext context)
     {
         if (isDashing) return;
+        if (!canMove) return;
 
         // Normal jumping and double jumping
         if (isGrounded() && !isWallSliding && !isWallJumping)
@@ -266,6 +269,20 @@ public class PlayerController : MonoBehaviour
     private void stopWallJump()
     {
         isWallJumping = false;
+    }
+
+    // MODIFIES: self
+    // EFFECTS: disables player movement
+    public void disableMovement()
+    {
+        canMove = false;
+    }
+
+    // MODIFIES: self
+    // EFFECTS: enables player movement
+    public void enableMovement()
+    {
+        canMove = true;
     }
 
     #endregion

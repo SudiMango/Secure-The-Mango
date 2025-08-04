@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public abstract class Gun : MonoBehaviour
 {
@@ -16,12 +15,6 @@ public abstract class Gun : MonoBehaviour
     protected bool isReloading = false;
     protected float shootTimer = 0f;
     protected float reloadTimer = 0f;
-
-
-    // UI
-    protected Transform magazineText;
-    protected Transform totalAmmoText;
-    protected Transform reloadSlider;
 
     // Input
     protected PlayerInputActions playerControls;
@@ -67,16 +60,9 @@ public abstract class Gun : MonoBehaviour
         currentAmmo = data.magazineCapacity;
         shootTimer = data.timeBetweenFire;
 
-        // Weapon info UI
-        GameObject ui = Instantiate(WeaponManager.Instance.weaponInfoGuiPrefab, GameObject.Find("MainCanvas").transform);
-
-        magazineText = ui.transform.Find("Magazine");
-        totalAmmoText = ui.transform.Find("TotalAmmo");
-        reloadSlider = ui.transform.Find("ReloadSlider");
-
         // Set weapon info UI values
-        magazineText.GetComponent<Text>().text = currentAmmo + "/" + data.magazineCapacity;
-        totalAmmoText.GetComponent<Text>().text = WeaponManager.Instance.totalAmmo.ToString();
+        UIManager.getInstance().updateMagazine(currentAmmo, data.magazineCapacity);
+        UIManager.getInstance().updateTotalAmmo(WeaponManager.getInstance().totalAmmo);
     }
 
     void Update()
@@ -87,7 +73,7 @@ public abstract class Gun : MonoBehaviour
         if (isReloading)
         {
             reloadTimer += Time.deltaTime;
-            reloadSlider.GetComponent<Slider>().value = reloadTimer / data.timeToReload;
+            UIManager.getInstance().updateReloadSlider(reloadTimer / data.timeToReload);
         }
     }
 
@@ -103,7 +89,7 @@ public abstract class Gun : MonoBehaviour
         {
             shootTimer = 0;
             onPrimaryFire();
-            magazineText.GetComponent<Text>().text = currentAmmo + "/" + data.magazineCapacity;
+            UIManager.getInstance().updateMagazine(currentAmmo, data.magazineCapacity);
         }
     }
 
@@ -116,7 +102,7 @@ public abstract class Gun : MonoBehaviour
     // EFFECTS: callback function for when player tries to reload their weapon
     private void onReload(InputAction.CallbackContext context)
     {
-        if (isReloading || currentAmmo >= data.magazineCapacity || WeaponManager.Instance.totalAmmo <= 0) return;
+        if (isReloading || currentAmmo >= data.magazineCapacity || WeaponManager.getInstance().totalAmmo <= 0) return;
 
         StartCoroutine(StartReload());
     }
@@ -138,25 +124,25 @@ public abstract class Gun : MonoBehaviour
     private IEnumerator StartReload()
     {
         reloadTimer = 0;
-        reloadSlider.GetComponent<Slider>().value = 0;
+        UIManager.getInstance().updateReloadSlider(0);
         isReloading = true;
         yield return new WaitForSeconds(data.timeToReload);
         reloadTimer = 0;
-        reloadSlider.GetComponent<Slider>().value = 0;
+        UIManager.getInstance().updateReloadSlider(0);
         isReloading = false;
-        if (data.magazineCapacity - currentAmmo <= WeaponManager.Instance.totalAmmo)
+        if (data.magazineCapacity - currentAmmo <= WeaponManager.getInstance().totalAmmo)
         {
             int ammoToAdd = data.magazineCapacity - currentAmmo;
             currentAmmo += ammoToAdd;
-            WeaponManager.Instance.totalAmmo -= ammoToAdd;
+            WeaponManager.getInstance().totalAmmo -= ammoToAdd;
         }
         else
         {
-            currentAmmo += WeaponManager.Instance.totalAmmo;
-            WeaponManager.Instance.totalAmmo = 0;
+            currentAmmo += WeaponManager.getInstance().totalAmmo;
+            WeaponManager.getInstance().totalAmmo = 0;
         }
-        magazineText.GetComponent<Text>().text = currentAmmo + "/" + data.magazineCapacity;
-        totalAmmoText.GetComponent<Text>().text = WeaponManager.Instance.totalAmmo.ToString();
+        UIManager.getInstance().updateMagazine(currentAmmo, data.magazineCapacity);
+        UIManager.getInstance().updateTotalAmmo(WeaponManager.getInstance().totalAmmo);
     }
 
     // MODIFIES: self

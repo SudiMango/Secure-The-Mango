@@ -7,10 +7,10 @@ public class Revolver : Gun
     // EFFECTS: primary method of fire, shoots 1 bullet out of gun
     protected override void onPrimaryFire()
     {
-        GameObject t_bullet = Instantiate(WeaponManager.Instance.bulletPrefab,
+        GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
                                             firePoint.position,
                                             firePoint.rotation,
-                                            WeaponManager.Instance.bulletParent);
+                                            WeaponManager.getInstance().bulletParent);
         BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
         bh.setEnemyTag("Enemy");
         bh.setDamage(data.damage);

@@ -10,10 +10,10 @@ public class Shotgun : Gun
         float rot = -7;
         for (int i = 0; i < 5; i++)
         {
-            GameObject t_bullet = Instantiate(WeaponManager.Instance.bulletPrefab,
+            GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
                                             firePoint.position,
                                             firePoint.rotation * Quaternion.Euler(0, 0, rot),
-                                            WeaponManager.Instance.bulletParent);
+                                            WeaponManager.getInstance().bulletParent);
             BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
             bh.setEnemyTag("Enemy");
             bh.setDamage(data.damage);

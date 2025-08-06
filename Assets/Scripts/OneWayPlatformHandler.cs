@@ -24,7 +24,7 @@ public class OneWayPlatformHandler : MonoBehaviour
     // Enable player input systems
     void OnEnable()
     {
-        platformDown = playerControls.Player.PlatformDown;
+        platformDown = playerControls.Player.Down;
         platformDown.Enable();
         platformDown.performed += onPlatformDown;
     }

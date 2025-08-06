@@ -41,47 +41,23 @@ public class PlayerMovementController : MonoBehaviour
     private float wallJumpDuration = 0.4f;
     private Vector2 wallJumpPower = new Vector2(8f, 16f);
 
-    // Player controls
-    private PlayerInputActions playerControls;
-    private InputAction move;
-    private InputAction jump;
-    private InputAction dash;
-
     // Other
-    Vector3 mousePos = Vector3.zero;
+    private Vector3 mousePos = Vector3.zero;
     private bool facingRight = true;
     public bool canMove = true;
+    private PlayerManager playerManager;
 
     #endregion
 
     #region Unity callbacks
 
-    void Awake()
-    {
-        playerControls = new PlayerInputActions();
-    }
-
     // Enable player input systems
-    void OnEnable()
+    void Start()
     {
-        move = playerControls.Player.Move;
-        jump = playerControls.Player.Jump;
-        dash = playerControls.Player.Dash;
+        playerManager = PlayerManager.getInstance();
 
-        move.Enable();
-        jump.Enable();
-        dash.Enable();
-
-        jump.performed += onJump;
-        dash.performed += onDash;
-    }
-
-    // Disable player input systems
-    void OnDisable()
-    {
-        move.Disable();
-        jump.Disable();
-        dash.Disable();
+        playerManager.jump.performed += onJump;
+        playerManager.shift.performed += onDash;
     }
 
     // Update is called once per frame
@@ -90,7 +66,7 @@ public class PlayerMovementController : MonoBehaviour
         if (isDashing) return;
 
         // Getting movement direction
-        moveDir = move.ReadValue<Vector2>();
+        moveDir = playerManager.move.ReadValue<Vector2>();
 
         // Making character look at the correct side
         mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
@@ -169,6 +145,7 @@ public class PlayerMovementController : MonoBehaviour
         Vector3 localScale = transform.localScale;
         localScale.x *= -1;
         transform.localScale = localScale;
+        GetComponent<PlayerWeaponHandler>().currentGun.BulletDir = getDir();
         facingRight = !facingRight;
     }
 

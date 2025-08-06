@@ -1,33 +1,66 @@
 using UnityEngine;
 
-public class AttackingState : BaseState<EnemySM.EnemyStates>
+public class AttackingState : BaseState<EnemyController.EnemyStates, EnemyController>
 {
-    public AttackingState(EnemySM.EnemyStates key) : base(key)
+    // Variables
+
+    // References
+    private GameObject parent;
+    private Rigidbody2D rb;
+
+    public AttackingState(EnemyController.EnemyStates key, EnemyController manager) : base(key, manager)
     {
     }
 
     public override void enterState()
     {
-        throw new System.NotImplementedException();
+        parent = manager.getParent();
+        rb = parent.GetComponent<Rigidbody2D>();
+
+        rb.linearVelocityX = 0;
+
+        parent.GetComponent<PivotHandler>().canPivot = true;
     }
 
     public override void exitState()
     {
-        throw new System.NotImplementedException();
+        parent.GetComponent<PivotHandler>().canPivot = false;
+        parent.GetComponent<PivotHandler>().resetPivot();
     }
 
     public override void frameUpdate()
     {
-        throw new System.NotImplementedException();
-    }
+        if (PlayerManager.getInstance().getPosition().x < parent.transform.position.x && manager.facingRight)
+        {
+            manager.flip();
+        }
+        else if (PlayerManager.getInstance().getPosition().x > parent.transform.position.x && !manager.facingRight)
+        {
+            manager.flip();
+        }
 
-    public override EnemySM.EnemyStates getNextState()
-    {
-        throw new System.NotImplementedException();
+        if (manager.currentGun.CurrentAmmo > 0)
+        {
+            manager.currentGun.onPrimaryFire();
+        }
+        else
+        {
+            manager.currentGun.onReload();
+        }
     }
 
     public override void physicsUpdate()
     {
-        throw new System.NotImplementedException();
+
+    }
+
+    public override EnemyController.EnemyStates getNextState()
+    {
+        if (manager.playerInRange())
+        {
+            return stateKey;
+        }
+
+        return EnemyController.EnemyStates.PatrollingState;
     }
 }

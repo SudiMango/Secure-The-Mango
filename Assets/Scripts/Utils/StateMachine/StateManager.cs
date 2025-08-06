@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // StateManager handles every state's functionality and transitioning between states
-public abstract class StateManager<TState> : MonoBehaviour where TState : Enum
+public abstract class StateManager<TState, TManager> : MonoBehaviour
+    where TState : Enum
+    where TManager : MonoBehaviour
 {
     // Variables
 
-    protected Dictionary<TState, BaseState<TState>> states = new Dictionary<TState, BaseState<TState>>();
-    protected BaseState<TState> currentState;
+    protected Dictionary<TState, BaseState<TState, TManager>> states = new();
+    protected BaseState<TState, TManager> currentState;
 
     protected bool isTransitioningState = false;
 

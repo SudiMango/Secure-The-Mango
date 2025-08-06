@@ -23,7 +23,7 @@ public class Revolver : Gun
             BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
             bh.setDamage(data.damage);
             bh.setSpeed(data.bulletSpeed);
-            bh.setDir(BulletDir);
+            bh.setDir(getDir());
             bh.startBullet();
 
             currentAmmo -= 1;
@@ -60,7 +60,7 @@ public class Revolver : Gun
             BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
             bh.setDamage((float)(data.damage * damageMultiplier));
             bh.setSpeed(data.bulletSpeed);
-            bh.setDir(BulletDir);
+            bh.setDir(getDir());
             bh.startBullet();
 
             currentAmmo -= 1;

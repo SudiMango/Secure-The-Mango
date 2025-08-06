@@ -29,7 +29,7 @@ public class Shotgun : Gun
                 BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
                 bh.setDamage(data.damage);
                 bh.setSpeed(data.bulletSpeed);
-                bh.setDir(BulletDir);
+                bh.setDir(getDir());
                 bh.startBullet();
                 rot += math.abs(primaryRot) / 2;
             }
@@ -57,7 +57,7 @@ public class Shotgun : Gun
                 BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
                 bh.setDamage((float)(data.damage * damageMultiplier));
                 bh.setSpeed((float)(data.bulletSpeed * speedMultiplier));
-                bh.setDir(BulletDir);
+                bh.setDir(getDir());
                 bh.startBullet();
                 rot += math.abs(secondaryRot);
             }
@@ -81,16 +81,5 @@ public class Shotgun : Gun
         rb.linearVelocity = dir * 15;
         yield return new WaitForSeconds(0.5f);
         m.enableMovement();
-    }
-
-    // EFFECTS: returns the direction based on player's x localscale
-    //          ENEMY WILL NEVER USE THIS ABILITY SO IT'S SAFE TO GET DIRECTION USING PLAYER TAG
-    private int getDir()
-    {
-        if (GameObject.FindWithTag("Player").transform.localScale.x < 0)
-        {
-            return -1;
-        }
-        return 1;
     }
 }

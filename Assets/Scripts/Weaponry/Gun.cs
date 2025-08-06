@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,8 +14,6 @@ public abstract class Gun : MonoBehaviour
     public bool IsReloading => isReloading;
     public float ReloadTimer => reloadTimer;
 
-    public int BulletDir { get; set; }
-
     // Events
     public event Action onReloadStarted;
     public event Action onReloadEnded;
@@ -22,6 +21,7 @@ public abstract class Gun : MonoBehaviour
     [Header("References")]
     [SerializeField] protected WeaponDataScriptableObject data;
     [SerializeField] protected Transform firePoint;
+    [SerializeField] protected Transform shooter;
 
     // Timers
     protected float primaryTimer = 0f;
@@ -98,17 +98,36 @@ public abstract class Gun : MonoBehaviour
         reloadTimer = 0;
         onReloadEnded?.Invoke();
         isReloading = false;
-        if (data.magazineCapacity - currentAmmo <= WeaponManager.getInstance().totalAmmo)
+        if (shooter.transform.gameObject.CompareTag("Player"))
+        {
+            if (data.magazineCapacity - currentAmmo <= WeaponManager.getInstance().totalAmmo)
+            {
+                int ammoToAdd = data.magazineCapacity - currentAmmo;
+                currentAmmo += ammoToAdd;
+                WeaponManager.getInstance().totalAmmo -= ammoToAdd;
+            }
+            else
+            {
+                currentAmmo += WeaponManager.getInstance().totalAmmo;
+                WeaponManager.getInstance().totalAmmo = 0;
+            }
+        }
+        else if (shooter.transform.gameObject.CompareTag("Enemy"))
         {
             int ammoToAdd = data.magazineCapacity - currentAmmo;
             currentAmmo += ammoToAdd;
-            WeaponManager.getInstance().totalAmmo -= ammoToAdd;
         }
-        else
+    }
+
+    // EFFECTS: returns the direction depending on x localscale of root entity
+    protected int getDir()
+    {
+        if (shooter.localScale.x > 0)
         {
-            currentAmmo += WeaponManager.getInstance().totalAmmo;
-            WeaponManager.getInstance().totalAmmo = 0;
+            return 1;
         }
+
+        return -1;
     }
 
     #endregion

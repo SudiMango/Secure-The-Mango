@@ -4,20 +4,16 @@ public class BulletHandler : MonoBehaviour
 {
     // References
     private Rigidbody2D rb;
-    private string enemyTag;
 
     // Bullet settings
     private float speed;
+    private float dir;
     private float damage;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         // Get rigidbody of bullet
         rb = GetComponent<Rigidbody2D>();
-
-        // Set bullet speed
-        rb.linearVelocity = transform.right * speed * getDir();
 
         // Destroy self after some time
         Destroy(gameObject, 5);
@@ -27,7 +23,7 @@ public class BulletHandler : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
 
-        if (collision.gameObject.CompareTag(enemyTag))
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Enemy"))
         {
             damageEnemy(collision.gameObject);
             Destroy(gameObject);
@@ -39,14 +35,6 @@ public class BulletHandler : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-    }
-
-    // REQUIRES: tag to be a valid tag in the game
-    // MODIFIES: self
-    // EFFECTS: sets the tag of the enemy that the bullet should look for
-    public void setEnemyTag(string tag)
-    {
-        enemyTag = tag;
     }
 
     // MODIFIES: self
@@ -63,21 +51,25 @@ public class BulletHandler : MonoBehaviour
         this.speed = speed;
     }
 
+    // MODIFIES: self
+    // EFFECTS: sets the direction of the bullet's travel
+    public void setDir(int dir)
+    {
+        this.dir = dir;
+    }
+
+    // MODIFIES: rb
+    // EFFECTS: starts the travel of the bullet
+    public void startBullet()
+    {
+        rb.linearVelocity = transform.right * speed * dir;
+    }
+
     // MODIFIES: enemy
     // EFFECTS: damages enemy by certain amount
     private void damageEnemy(GameObject enemy)
     {
         Health h = enemy.GetComponent<Health>();
         h.setCurrentHealth(h.getCurrentHealth() - damage);
-    }
-
-    // EFFECTS: returns the direction based on player's x localscale
-    private int getDir()
-    {
-        if (GameObject.FindWithTag("Player").transform.localScale.x < 0)
-        {
-            return -1;
-        }
-        return 1;
     }
 }

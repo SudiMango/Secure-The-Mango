@@ -1,7 +1,6 @@
 using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Shotgun : Gun
 {
@@ -14,7 +13,7 @@ public class Shotgun : Gun
 
     // MODIFIES: self, bullet
     // EFFECTS: primary method of fire, shoots 5 shotgun pellets out of gun
-    protected override void onPrimaryFire()
+    public override void onPrimaryFire()
     {
         if (primaryTimer >= data.timeBetweenPrimaryFire && currentAmmo > 0 && !isReloading)
         {
@@ -28,15 +27,14 @@ public class Shotgun : Gun
                                                 firePoint.rotation * Quaternion.Euler(0, 0, rot),
                                                 WeaponManager.getInstance().bulletParent);
                 BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
-                bh.setEnemyTag("Enemy");
                 bh.setDamage(data.damage);
                 bh.setSpeed(data.bulletSpeed);
+                bh.setDir(BulletDir);
+                bh.startBullet();
                 rot += math.abs(primaryRot) / 2;
             }
 
             currentAmmo -= 1;
-
-            UIManager.getInstance().updateMagazine(currentAmmo, data.magazineCapacity);
         }
     }
 
@@ -44,7 +42,7 @@ public class Shotgun : Gun
     // MODIFIES: self, bullet
     // EFFECTS: secondary method of fire, does a faster three-shot higher damage pellet and 
     //          propels player towards opposite direction of fire
-    protected override void onSecondaryFire()
+    public override void onSecondaryFire()
     {
         if (secondaryTimer >= data.timeBetweenSecondaryFire && currentAmmo > 0 && !isReloading)
         {
@@ -57,14 +55,14 @@ public class Shotgun : Gun
                                                 firePoint.rotation * Quaternion.Euler(0, 0, rot),
                                                 WeaponManager.getInstance().bulletParent);
                 BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
-                bh.setEnemyTag("Enemy");
                 bh.setDamage((float)(data.damage * damageMultiplier));
                 bh.setSpeed((float)(data.bulletSpeed * speedMultiplier));
+                bh.setDir(BulletDir);
+                bh.startBullet();
                 rot += math.abs(secondaryRot);
             }
 
             currentAmmo -= 1;
-            UIManager.getInstance().updateMagazine(currentAmmo, data.magazineCapacity);
             StartCoroutine(PropelPlayer());
         }
     }
@@ -86,6 +84,7 @@ public class Shotgun : Gun
     }
 
     // EFFECTS: returns the direction based on player's x localscale
+    //          ENEMY WILL NEVER USE THIS ABILITY SO IT'S SAFE TO GET DIRECTION USING PLAYER TAG
     private int getDir()
     {
         if (GameObject.FindWithTag("Player").transform.localScale.x < 0)

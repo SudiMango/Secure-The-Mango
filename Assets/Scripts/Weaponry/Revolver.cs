@@ -8,8 +8,10 @@ public class Revolver : Gun
 
     // MODIFIES: self, bullet
     // EFFECTS: primary method of fire, shoots 1 bullet out of gun
-    protected override void onPrimaryFire()
+    public override void onPrimaryFire()
     {
+        if (!canShoot) return;
+
         if (primaryTimer >= data.timeBetweenPrimaryFire && currentAmmo > 0 && !isReloading)
         {
             primaryTimer = 0;
@@ -19,21 +21,22 @@ public class Revolver : Gun
                                                     firePoint.rotation,
                                                     WeaponManager.getInstance().bulletParent);
             BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
-            bh.setEnemyTag("Enemy");
             bh.setDamage(data.damage);
             bh.setSpeed(data.bulletSpeed);
+            bh.setDir(BulletDir);
+            bh.startBullet();
 
             currentAmmo -= 1;
-
-            UIManager.getInstance().updateMagazine(currentAmmo, data.magazineCapacity);
         }
     }
 
 
     // MODIFIES: self, bullet
     // EFFECTS: secondary method of fire, does "fan the hammer" effect on all bullets left in magazine
-    protected override void onSecondaryFire()
+    public override void onSecondaryFire()
     {
+        if (!canShoot) return;
+
         if (secondaryTimer >= data.timeBetweenSecondaryFire && currentAmmo > 0 && !isReloading)
         {
             secondaryTimer = 0;
@@ -45,7 +48,7 @@ public class Revolver : Gun
     // EFFECTS: perform "fan the hammer" effect on all bullets left in magazine, damage is reduced
     private IEnumerator FanTheHammer()
     {
-        inputFrozen = true;
+        canShoot = false;
 
         int numRounds = currentAmmo;
         for (int i = 0; i < numRounds; i++)
@@ -55,16 +58,16 @@ public class Revolver : Gun
                                             firePoint.rotation,
                                             WeaponManager.getInstance().bulletParent);
             BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
-            bh.setEnemyTag("Enemy");
             bh.setDamage((float)(data.damage * damageMultiplier));
             bh.setSpeed(data.bulletSpeed);
+            bh.setDir(BulletDir);
+            bh.startBullet();
 
             currentAmmo -= 1;
-            UIManager.getInstance().updateMagazine(currentAmmo, data.magazineCapacity);
 
             yield return new WaitForSeconds(0.25f);
         }
 
-        inputFrozen = false;
+        canShoot = true;
     }
 }

@@ -4,7 +4,8 @@ using UnityEngine.UI;
 // EnemyUIManager manages all enemy UI
 public class EnemyUIManager : MonoBehaviour
 {
-    [SerializeField] public RectTransform healthPanel;
+    [SerializeField] private RectTransform canvas;
+    [SerializeField] private RectTransform healthPanel;
     private Transform healthBar;
 
     private void Awake()
@@ -46,5 +47,14 @@ public class EnemyUIManager : MonoBehaviour
         }
 
         return new Color(rVal / 255, gVal / 255, 0 / 255);
+    }
+
+    // MODIFIES: self
+    // EFFECTS: flips the canvas on the x-axis
+    public void flipCanvas()
+    {
+        Vector3 localScale = canvas.localScale;
+        localScale.x *= -1;
+        canvas.localScale = localScale;
     }
 }

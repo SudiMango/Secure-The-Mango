@@ -20,10 +20,11 @@ public class Revolver : Gun
                                                     firePoint.position,
                                                     firePoint.rotation,
                                                     WeaponManager.getInstance().bulletParent);
-            BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
+            Bullet bh = t_bullet.GetComponent<Bullet>();
             bh.setDamage(data.damage);
             bh.setSpeed(data.bulletSpeed);
             bh.setDir(getDir());
+            bh.setEnemyTag(shooter.tag);
             bh.startBullet();
 
             currentAmmo -= 1;
@@ -57,10 +58,11 @@ public class Revolver : Gun
                                             firePoint.position,
                                             firePoint.rotation,
                                             WeaponManager.getInstance().bulletParent);
-            BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
+            Bullet bh = t_bullet.GetComponent<Bullet>();
             bh.setDamage((float)(data.damage * damageMultiplier));
             bh.setSpeed(data.bulletSpeed);
             bh.setDir(getDir());
+            bh.setEnemyTag(shooter.tag);
             bh.startBullet();
 
             currentAmmo -= 1;

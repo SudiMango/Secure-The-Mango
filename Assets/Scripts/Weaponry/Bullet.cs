@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BulletHandler : MonoBehaviour
+public class Bullet : MonoBehaviour
 {
     // References
     private Rigidbody2D rb;
@@ -8,6 +8,7 @@ public class BulletHandler : MonoBehaviour
     // Bullet settings
     private float speed;
     private float dir;
+    private string enemyTag;
     private float damage;
 
     void Awake()
@@ -22,18 +23,14 @@ public class BulletHandler : MonoBehaviour
     // When the bullet collides with another object
     private void OnTriggerEnter2D(Collider2D collision)
     {
-
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Enemy"))
+        if (collision.gameObject.CompareTag(enemyTag))
         {
             damageEnemy(collision.gameObject);
             Destroy(gameObject);
         }
-        else if (collision.gameObject.layer == 6 || collision.gameObject.layer == 7)
+        else if (collision.gameObject.layer != LayerMask.NameToLayer("OneWayPlatform") && collision.gameObject.layer != LayerMask.NameToLayer("Bullet"))
         {
-            if (!collision.gameObject.CompareTag("OneWayPlatform"))
-            {
-                Destroy(gameObject);
-            }
+            Destroy(gameObject);
         }
     }
 
@@ -56,6 +53,21 @@ public class BulletHandler : MonoBehaviour
     public void setDir(int dir)
     {
         this.dir = dir;
+    }
+
+    // REQUIRES: tag to be a valid tag in the game
+    // MODIFIES: self
+    // EFFECTS: sets the tag of the enemy that the bullet should look for
+    public void setEnemyTag(string ownerTag)
+    {
+        if (ownerTag == "Player")
+        {
+            enemyTag = "Enemy";
+        }
+        else if (ownerTag == "Enemy")
+        {
+            enemyTag = "Player";
+        }
     }
 
     // MODIFIES: rb

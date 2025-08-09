@@ -26,10 +26,11 @@ public class Shotgun : Gun
                                                 firePoint.position,
                                                 firePoint.rotation * Quaternion.Euler(0, 0, rot),
                                                 WeaponManager.getInstance().bulletParent);
-                BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
+                Bullet bh = t_bullet.GetComponent<Bullet>();
                 bh.setDamage(data.damage);
                 bh.setSpeed(data.bulletSpeed);
                 bh.setDir(getDir());
+                bh.setEnemyTag(shooter.tag);
                 bh.startBullet();
                 rot += math.abs(primaryRot) / 2;
             }
@@ -54,10 +55,11 @@ public class Shotgun : Gun
                                                 firePoint.position,
                                                 firePoint.rotation * Quaternion.Euler(0, 0, rot),
                                                 WeaponManager.getInstance().bulletParent);
-                BulletHandler bh = t_bullet.GetComponent<BulletHandler>();
+                Bullet bh = t_bullet.GetComponent<Bullet>();
                 bh.setDamage((float)(data.damage * damageMultiplier));
                 bh.setSpeed((float)(data.bulletSpeed * speedMultiplier));
                 bh.setDir(getDir());
+                bh.setEnemyTag(shooter.tag);
                 bh.startBullet();
                 rot += math.abs(secondaryRot);
             }

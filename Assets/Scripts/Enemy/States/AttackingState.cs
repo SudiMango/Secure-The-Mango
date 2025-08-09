@@ -51,7 +51,7 @@ public class AttackingState : BaseState<EnemyController.EnemyStates, EnemyContro
 
     public override void physicsUpdate()
     {
-
+        rb.linearVelocityX = 0;
     }
 
     public override EnemyController.EnemyStates getNextState()

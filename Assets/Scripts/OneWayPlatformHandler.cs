@@ -8,7 +8,7 @@ public class OneWayPlatformHandler : MonoBehaviour
     [Header("References")]
     [SerializeField] private BoxCollider2D playerCollider;
     [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask platformLayer;
 
     private GameObject currOneWayPlatform = null;
 
@@ -35,10 +35,11 @@ public class OneWayPlatformHandler : MonoBehaviour
         platformDown.Disable();
     }
 
+    // EFFECTS: returns true if player is standing on one way platform, returns false otherwise
     private bool isOnPlatform()
     {
-        Collider2D hit = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
-        if (hit != null && hit.CompareTag("OneWayPlatform"))
+        Collider2D hit = Physics2D.OverlapCircle(groundCheck.position, 0.2f, platformLayer);
+        if (hit != null)
         {
             currOneWayPlatform = hit.gameObject;
             return true;

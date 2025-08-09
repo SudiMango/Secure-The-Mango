@@ -4,7 +4,6 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - OneWayPlatform
   - Enemy
   layers:
   - Default
@@ -15,9 +14,9 @@ TagManager:
   - UI
   - Ground
   - Wall
+  - OneWayPlatform
   - Enemy
-  - 
-  - 
+  - Bullet
   - 
   - 
   - 

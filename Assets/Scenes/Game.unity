@@ -197,9 +197,9 @@ GameObject:
   - component: {fileID: 90219717}
   - component: {fileID: 90219716}
   - component: {fileID: 90219718}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: OneWayPlatform
-  m_TagString: OneWayPlatform
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -642,7 +642,7 @@ GameObject:
   - component: {fileID: 488645447}
   - component: {fileID: 488645448}
   - component: {fileID: 488645449}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -1579,7 +1579,7 @@ GameObject:
   - component: {fileID: 709702028}
   - component: {fileID: 709702030}
   m_Layer: 6
-  m_Name: Platform
+  m_Name: PlatformBruh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2695,9 +2695,9 @@ GameObject:
   - component: {fileID: 1346119760}
   - component: {fileID: 1346119759}
   - component: {fileID: 1346119758}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: OneWayPlatform
-  m_TagString: OneWayPlatform
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3026,7 +3026,7 @@ MonoBehaviour:
   groundCheck: {fileID: 695380932}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 832
   moveSpeed: 6
   jumpForce: 12
   doubleJumpMultiplier: 0.75
@@ -3137,9 +3137,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCollider: {fileID: 1483368238}
   groundCheck: {fileID: 695380932}
-  groundLayer:
+  platformLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 256
 --- !u!114 &1483368247
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,37 +4,31 @@ public class AttackingState : BaseState<EnemyController.EnemyStates, EnemyContro
 {
     // Variables
 
-    // References
-    private GameObject parent;
-    private Rigidbody2D rb;
+    // EFFECTS: create new state
+    public AttackingState(EnemyController.EnemyStates key, EnemyController manager) : base(key, manager) { }
 
-    public AttackingState(EnemyController.EnemyStates key, EnemyController manager) : base(key, manager)
-    {
-    }
-
+    // EFFECTS: called when entering the state
     public override void enterState()
     {
-        parent = manager.getParent();
-        rb = parent.GetComponent<Rigidbody2D>();
-
-        rb.linearVelocityX = 0;
-
-        parent.GetComponent<PivotHandler>().canPivot = true;
+        manager.rb.linearVelocityX = 0;
+        manager.getParent().GetComponent<PivotHandler>().canPivot = true;
     }
 
+    // EFFECTS: called when exiting the state
     public override void exitState()
     {
-        parent.GetComponent<PivotHandler>().canPivot = false;
-        parent.GetComponent<PivotHandler>().resetPivot();
+        manager.getParent().GetComponent<PivotHandler>().canPivot = false;
+        manager.getParent().GetComponent<PivotHandler>().resetPivot();
     }
 
+    // EFFECTS: called on default Update method
     public override void frameUpdate()
     {
-        if (PlayerManager.getInstance().getPosition().x < parent.transform.position.x && manager.facingRight)
+        if (PlayerManager.getInstance().getPosition().x < manager.getParent().transform.position.x && manager.facingRight)
         {
             manager.flip();
         }
-        else if (PlayerManager.getInstance().getPosition().x > parent.transform.position.x && !manager.facingRight)
+        else if (PlayerManager.getInstance().getPosition().x > manager.getParent().transform.position.x && !manager.facingRight)
         {
             manager.flip();
         }
@@ -49,11 +43,13 @@ public class AttackingState : BaseState<EnemyController.EnemyStates, EnemyContro
         }
     }
 
+    // EFFECTS: called on default FixedUpdate method
     public override void physicsUpdate()
     {
-        rb.linearVelocityX = 0;
+        manager.rb.linearVelocityX = 0;
     }
 
+    // EFFECTS: returns next state if conditions are met, otherwise returns current state
     public override EnemyController.EnemyStates getNextState()
     {
         if (manager.playerInRange())

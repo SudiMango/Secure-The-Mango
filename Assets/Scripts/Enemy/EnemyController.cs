@@ -2,14 +2,19 @@ using UnityEngine;
 
 public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyController>
 {
-    public bool facingRight = true;
-    public float detectionRange = 50f;
-
-    [SerializeField] private Transform edgeCheck;
-    [SerializeField] private LayerMask groundLayer;
+    public EnemyDataScriptableObject data;
 
     public Gun currentGun;
+    public Rigidbody2D rb;
+    public bool facingRight = true;
 
+    [Header("References")]
+    [SerializeField] private Transform edgeCheck;
+    [SerializeField] private Transform wallCheck;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask wallLayer;
+
+    // Enemy states
     public enum EnemyStates
     {
         PatrollingState,
@@ -17,6 +22,7 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
         AttackingState
     }
 
+    // Initialize all the states
     void Awake()
     {
         states.Add(EnemyStates.PatrollingState, new PatrollingState(EnemyStates.PatrollingState, this));
@@ -26,14 +32,24 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
         currentState = states[EnemyStates.PatrollingState];
     }
 
-    public GameObject getParent()
+    #region Custom functions
+
+    // EFFECTS: returns true if there is still ground in front of the enemy
+    public bool isNearGround()
     {
-        return gameObject;
+        return Physics2D.OverlapCircle(edgeCheck.position, 0.2f, groundLayer);
     }
 
+    // EFFECTS: returns true if the enemy is against a wall
+    public bool isAgainstWall()
+    {
+        return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer) && GetComponent<Rigidbody2D>().linearVelocityX < float.Epsilon;
+    }
+
+    // EFFECTS: returns true if player is in range and is in LOS, returns false otherwise
     public bool playerInRange()
     {
-        if (Vector3.Distance(transform.position, PlayerManager.getInstance().getPosition()) < detectionRange)
+        if (Vector3.Distance(transform.position, PlayerManager.getInstance().getPosition()) < data.playerDetectionRange)
         {
             Vector3 dir = PlayerManager.getInstance().getPosition() - (Vector2)transform.position;
             dir.Normalize();
@@ -73,8 +89,11 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
         return 1;
     }
 
-    public bool isNearEdge()
+    // EFFECTS: returns the original enemy gameObject
+    public GameObject getParent()
     {
-        return Physics2D.OverlapCircle(edgeCheck.position, 0.2f, groundLayer);
+        return gameObject;
     }
+
+    #endregion
 }

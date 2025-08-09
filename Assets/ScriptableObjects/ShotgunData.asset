@@ -15,7 +15,7 @@ MonoBehaviour:
   weaponName: Revolver
   damage: 15
   bulletSpeed: 12
-  timeBetweenPrimaryFire: 0.35
+  timeBetweenPrimaryFire: 0.4
   timeBetweenSecondaryFire: 3
   magazineCapacity: 5
   timeToReload: 3

@@ -10,6 +10,7 @@ public class EnemyDataScriptableObject : ScriptableObject
 
     [Header("Other basic info")]
     public float playerDetectionRange;
+    public float playerAttackRange;
     public float patrolWalkRange;
 
     [Header("Weaponry related")]

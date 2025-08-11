@@ -10,6 +10,7 @@ public abstract class BaseState<TState, TManager>
 
     public TState stateKey { get; private set; }
     public TManager manager { get; set; }
+    public StateBehavior<TState, TManager> behavior;
 
     // EFFECTS: creates new state with its unique key and manager
     public BaseState(TState key, TManager manager)

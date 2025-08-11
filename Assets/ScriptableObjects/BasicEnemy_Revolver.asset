@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: BasicEnemy_Revolver
   m_EditorClassIdentifier: 
   patrolSpeed: 3
-  chaseSpeed: 0
+  chaseSpeed: 5
   attackSpeed: 0
   playerDetectionRange: 10
-  patrolWalkRange: 20
+  playerAttackRange: 2
+  patrolWalkRange: 3
   weaponPrefab: {fileID: 3206120388651851097, guid: 1d0e727593b7d764e802820940fe72a6, type: 3}
   damage: 10
+  dropsOnDeath: []

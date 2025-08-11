@@ -46,26 +46,40 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
         return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer) && GetComponent<Rigidbody2D>().linearVelocityX < float.Epsilon;
     }
 
-    // EFFECTS: returns true if player is in range and is in LOS, returns false otherwise
-    public bool playerInRange()
+    // EFFECTS: returns true if player is in range
+    public bool playerInRange(float range)
     {
-        if (Vector3.Distance(transform.position, PlayerManager.getInstance().getPosition()) < data.playerDetectionRange)
+        if (Vector3.Distance(transform.position, PlayerManager.getInstance().getPosition()) < range)
         {
-            Vector3 dir = PlayerManager.getInstance().getPosition() - (Vector2)transform.position;
-            dir.Normalize();
+            return true;
+        }
 
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, 20, ~LayerMask.GetMask("Bullet", "OneWayPlatform", "Enemy"));
+        return false;
+    }
 
-            if (hit.collider != null)
+    // EFFECTS: returns true if player is in line of sight
+    public bool playerInLOS()
+    {
+        Vector3 dir = PlayerManager.getInstance().getPosition() - (Vector2)transform.position;
+        dir.Normalize();
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, 20, ~LayerMask.GetMask("Bullet", "OneWayPlatform", "Enemy"));
+
+        if (hit.collider != null)
+        {
+            if (hit.transform.gameObject.CompareTag("Player"))
             {
-                if (hit.transform.gameObject.CompareTag("Player"))
-                {
-                    return true;
-                }
+                return true;
             }
         }
 
         return false;
+    }
+
+    // EFFECTS: returns true if player is in range and in line of sight
+    public bool playerInRangeAndLOS(float range)
+    {
+        return playerInRange(range) && playerInLOS();
     }
 
     // MODIFIES: transform.localScale

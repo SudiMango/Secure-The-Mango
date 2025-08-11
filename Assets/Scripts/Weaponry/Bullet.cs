@@ -8,6 +8,7 @@ public class Bullet : MonoBehaviour
     // Bullet settings
     private float speed;
     private float dir;
+    private string ownerTag;
     private string enemyTag;
     private float damage;
 
@@ -30,7 +31,10 @@ public class Bullet : MonoBehaviour
         }
         else if (collision.gameObject.layer != LayerMask.NameToLayer("OneWayPlatform") && collision.gameObject.layer != LayerMask.NameToLayer("Bullet"))
         {
-            Destroy(gameObject);
+            if (!collision.gameObject.CompareTag(ownerTag))
+            {
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -60,6 +64,7 @@ public class Bullet : MonoBehaviour
     // EFFECTS: sets the tag of the enemy that the bullet should look for
     public void setEnemyTag(string ownerTag)
     {
+        this.ownerTag = ownerTag;
         if (ownerTag == "Player")
         {
             enemyTag = "Enemy";

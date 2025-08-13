@@ -1,12 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// EnemyUIManager manages all enemy UI
-public class EnemyUIManager : MonoBehaviour
+// EnemyUIHandler manages all enemy UI
+public class EnemyUIHandler : MonoBehaviour
 {
-    [SerializeField] private RectTransform canvas;
+    [Header("References")]
+    [SerializeField] private Transform owner;
     [SerializeField] private RectTransform healthPanel;
     private Transform healthBar;
+
+    [Header("Events")]
+    [SerializeField] private GameEvent onHealthChanged;
 
     private void Awake()
     {
@@ -17,23 +21,23 @@ public class EnemyUIManager : MonoBehaviour
 
     // MODIFIES: self
     // EFFECTS: updates health bar and text based on currentHealth and maxHealth
-    public void updateHealthBar(float currentHealth, float maxHealth)
+    public void updateHealthBar(Component sender, object data)
     {
-        healthBar.GetComponent<RectTransform>().sizeDelta = new Vector2(healthToSize(currentHealth, maxHealth), 70);
-        healthBar.GetComponent<Image>().color = healthToColor(currentHealth, maxHealth);
-    }
+        if (sender.gameObject.CompareTag("Player") || !sender.Equals(owner)) return;
 
-    // EFFECTS: returns x size of healthBar depending on enemy health
-    private float healthToSize(float currentHealth, float maxHealth)
-    {
-        return currentHealth / maxHealth * 500;
+        float[] _data = data as float[];
+        float currentHealth = _data[0];
+        float maxHealth = _data[1];
+
+        healthBar.GetComponent<Slider>().value = currentHealth / maxHealth;
+        healthBar.Find("Fill").GetComponent<Image>().color = healthToColor(currentHealth, maxHealth);
     }
 
     // EFFECTS: returns color based on enemy health
     private Color healthToColor(float currentHealth, float maxHealth)
     {
-        float rVal = 0;
-        float gVal = 0;
+        float rVal;
+        float gVal;
 
         if (currentHealth >= maxHealth / 2)
         {
@@ -53,8 +57,8 @@ public class EnemyUIManager : MonoBehaviour
     // EFFECTS: flips the canvas on the x-axis
     public void flipCanvas()
     {
-        Vector3 localScale = canvas.localScale;
+        Vector3 localScale = transform.localScale;
         localScale.x *= -1;
-        canvas.localScale = localScale;
+        transform.localScale = localScale;
     }
 }

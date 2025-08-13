@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 // Health script manages all health related stuff
 public class Health : MonoBehaviour
@@ -8,11 +7,14 @@ public class Health : MonoBehaviour
     [SerializeField] private float maxHealth;
     [SerializeField] private float currentHealth;
 
+    [Header("Events")]
+    [SerializeField] private GameEvent onHealthChanged;
+
     void Start()
     {
         // Set initial health values
         currentHealth = maxHealth;
-        updateUI();
+        onHealthChanged.raise(transform, new float[] { currentHealth, maxHealth });
     }
 
     // MODIFIES: self, UIManager
@@ -20,7 +22,7 @@ public class Health : MonoBehaviour
     public void setCurrentHealth(float currentHealth)
     {
         this.currentHealth = currentHealth;
-        updateUI();
+        onHealthChanged.raise(transform, new float[] { currentHealth, maxHealth });
     }
 
     // EFFECTS: returns the value of currentHealth
@@ -34,28 +36,13 @@ public class Health : MonoBehaviour
     public void setMaxHealth(float maxHealth)
     {
         this.maxHealth = maxHealth;
-        updateUI();
+        onHealthChanged.raise(transform, new float[] { currentHealth, maxHealth });
     }
 
     // EFFECTS: returns the value of maxHealth
     public float getMaxHealth()
     {
         return maxHealth;
-    }
-
-    // REQUIRES: attached gameobject to have tag Enemy or Player
-    // MODIFIES: UIManager
-    // EFFECTS: updates health UI depending on if entity is player or enemy
-    private void updateUI()
-    {
-        if (gameObject.CompareTag("Enemy"))
-        {
-            transform.GetComponent<EnemyUIManager>().updateHealthBar(currentHealth, maxHealth);
-        }
-        else if (gameObject.CompareTag("Player"))
-        {
-            UIManager.getInstance().updateHealthBar(currentHealth, maxHealth);
-        }
     }
 
 }

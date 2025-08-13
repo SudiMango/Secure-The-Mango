@@ -23,19 +23,20 @@ public class Shotgun : Gun
             for (int i = 0; i < 5; i++)
             {
                 GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
-                                                firePoint.position,
-                                                firePoint.rotation * Quaternion.Euler(0, 0, rot),
+                                                attackPoint.position,
+                                                attackPoint.rotation * Quaternion.Euler(0, 0, rot),
                                                 WeaponManager.getInstance().bulletParent);
                 Bullet bh = t_bullet.GetComponent<Bullet>();
                 bh.setDamage(data.damage);
                 bh.setSpeed(data.bulletSpeed);
                 bh.setDir(getDir());
-                bh.setEnemyTag(shooter.tag);
+                bh.setEnemyTag(owner.tag);
                 bh.startBullet();
                 rot += math.abs(primaryRot) / 2;
             }
 
             currentAmmo -= 1;
+            updateAmmoGui.raise(owner, new object[] { currentAmmo, data.magazineCapacity });
         }
     }
 
@@ -52,19 +53,20 @@ public class Shotgun : Gun
             for (int i = 0; i < 3; i++)
             {
                 GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
-                                                firePoint.position,
-                                                firePoint.rotation * Quaternion.Euler(0, 0, rot),
+                                                attackPoint.position,
+                                                attackPoint.rotation * Quaternion.Euler(0, 0, rot),
                                                 WeaponManager.getInstance().bulletParent);
                 Bullet bh = t_bullet.GetComponent<Bullet>();
                 bh.setDamage((float)(data.damage * damageMultiplier));
                 bh.setSpeed((float)(data.bulletSpeed * speedMultiplier));
                 bh.setDir(getDir());
-                bh.setEnemyTag(shooter.tag);
+                bh.setEnemyTag(owner.tag);
                 bh.startBullet();
                 rot += math.abs(secondaryRot);
             }
 
             currentAmmo -= 1;
+            updateAmmoGui.raise(owner, new object[] { currentAmmo, data.magazineCapacity });
             StartCoroutine(PropelPlayer());
         }
     }
@@ -77,7 +79,7 @@ public class Shotgun : Gun
         PlayerMovementController m = plr.GetComponent<PlayerMovementController>();
         Rigidbody2D rb = plr.GetComponent<Rigidbody2D>();
 
-        Vector2 dir = firePoint.right * -getDir();
+        Vector2 dir = attackPoint.right * -getDir();
 
         m.disableMovement();
         rb.linearVelocity = dir * 15;

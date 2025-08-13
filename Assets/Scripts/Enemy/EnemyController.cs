@@ -4,7 +4,7 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
 {
     public EnemyDataScriptableObject data;
 
-    public Gun currentGun;
+    public Weapon currentWeapon;
     public Rigidbody2D rb;
     public bool facingRight = true;
 
@@ -89,7 +89,7 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
         Vector3 localScale = transform.localScale;
         localScale.x *= -1;
         transform.localScale = localScale;
-        transform.GetComponent<EnemyUIManager>().flipCanvas();
+        transform.Find("EnemyCanvas").GetComponent<EnemyUIHandler>().flipCanvas();
         facingRight = !facingRight;
     }
 

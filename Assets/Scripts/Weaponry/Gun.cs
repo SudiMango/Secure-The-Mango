@@ -10,9 +10,14 @@ public abstract class Gun : MonoBehaviour
     public int CurrentAmmo => currentAmmo;
     public bool IsReloading => isReloading;
 
+    [Header("References")]
+    [SerializeField] protected WeaponDataScriptableObject data;
+    [SerializeField] protected Transform firePoint;
+    [SerializeField] protected Transform owner;
+
     // Events
     [Header("Events")]
-    [SerializeField] protected GameEvent updateAmmoGui;
+    [SerializeField] protected GameEvent onShoot;
     [SerializeField] private GameEvent onReloadStarted;
     [SerializeField] private GameEvent onReloadEnded;
 
@@ -37,7 +42,7 @@ public abstract class Gun : MonoBehaviour
         secondaryTimer = data.timeBetweenSecondaryFire;
         currentAmmo = data.magazineCapacity;
 
-        updateAmmoGui.raise(owner, new object[] { currentAmmo, data.magazineCapacity });
+        onReloadEnded.raise(owner, new int[] { currentAmmo, data.magazineCapacity });
     }
 
     private void Update()
@@ -74,7 +79,7 @@ public abstract class Gun : MonoBehaviour
         StopCoroutine(StartReload());
         isReloading = false;
 
-        onReloadEnded.raise(owner, null);
+        onReloadEnded.raise(owner, new int[] { currentAmmo, data.magazineCapacity });
     }
 
     // MODIFIES: self
@@ -87,7 +92,6 @@ public abstract class Gun : MonoBehaviour
         yield return new WaitForSeconds(data.timeToReload);
 
         isReloading = false;
-        onReloadEnded.raise(owner, null);
 
         if (owner.transform.gameObject.CompareTag("Player"))
         {
@@ -102,7 +106,6 @@ public abstract class Gun : MonoBehaviour
                 currentAmmo += WeaponManager.getInstance().totalAmmo;
                 WeaponManager.getInstance().setTotalAmmo(-WeaponManager.getInstance().totalAmmo);
             }
-            updateAmmoGui.raise(owner, new object[] { currentAmmo, data.magazineCapacity });
         }
         else if (owner.transform.gameObject.CompareTag("Enemy"))
         {
@@ -110,6 +113,7 @@ public abstract class Gun : MonoBehaviour
             currentAmmo += ammoToAdd;
         }
 
+        onReloadEnded.raise(owner, new int[] { currentAmmo, data.magazineCapacity });
     }
 
     // EFFECTS: returns the direction depending on x localscale of root entity
@@ -124,4 +128,22 @@ public abstract class Gun : MonoBehaviour
     }
 
     #endregion
+}
+
+public class GunFiredEventData
+{
+    public int currentAmmo;
+    public int magazineCapacity;
+    public Bullet[] currentBullets;
+    public Transform currentFirePoint;
+    public int dirDuringFire;
+
+    public GunFiredEventData(int currentAmmo, int magazineCapacity, Bullet[] currentBullets, Transform currentFirePoint, int dirDuringFire)
+    {
+        this.currentAmmo = currentAmmo;
+        this.magazineCapacity = magazineCapacity;
+        this.currentBullets = currentBullets;
+        this.currentFirePoint = currentFirePoint;
+        this.dirDuringFire = dirDuringFire;
+    }
 }

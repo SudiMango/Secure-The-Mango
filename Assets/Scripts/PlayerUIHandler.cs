@@ -7,9 +7,6 @@ public class PlayerUIHandler : MonoBehaviour
     [SerializeField] private RectTransform HealthPanel;
     [SerializeField] private RectTransform WeaponInfo;
 
-    [Header("Events")]
-    [SerializeField] private GameEvent onHealthChanged;
-
     // Health
     private Transform healthBar;
     private Transform healthText;
@@ -90,13 +87,10 @@ public class PlayerUIHandler : MonoBehaviour
     // EFFECTS: updates magazine text
     public void updateMagazine(Component sender, object data)
     {
-        object[] _data = data as object[];
-        int currentAmmo = (int)_data[0];
-        int magazineCapacity = (int)_data[1];
-
         if (!sender.gameObject.CompareTag("Player")) return;
 
-        magazineText.GetComponent<Text>().text = currentAmmo.ToString() + "/" + magazineCapacity.ToString();
+        GunFiredEventData _data = data as GunFiredEventData;
+        magazineText.GetComponent<Text>().text = _data.currentAmmo.ToString() + "/" + _data.magazineCapacity.ToString();
     }
 
     // MODIFIES: self
@@ -124,6 +118,12 @@ public class PlayerUIHandler : MonoBehaviour
     public void onReloadEnded(Component sender, object data)
     {
         if (!sender.gameObject.CompareTag("Player")) return;
+
+        int[] _data = data as int[];
+        int currentAmmo = _data[0];
+        int magazineCapacity = _data[1];
+
+        magazineText.GetComponent<Text>().text = currentAmmo.ToString() + "/" + magazineCapacity.ToString();
 
         isReloading = false;
         reloadTimer = 0f;

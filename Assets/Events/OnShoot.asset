@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 10e3e6cb74bbaea4586245bafc4dc693, type: 3}
-  m_Name: UpdateAmmoGui
+  m_Name: OnShoot
   m_EditorClassIdentifier: 
   listeners: []

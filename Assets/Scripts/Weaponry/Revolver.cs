@@ -30,7 +30,7 @@ public class Revolver : Gun
 
             currentAmmo -= 1;
 
-            updateAmmoGui.raise(owner, new object[] { currentAmmo, data.magazineCapacity });
+            onShoot.raise(owner, new GunFiredEventData(currentAmmo, data.magazineCapacity, new Bullet[] { bh }, firePoint, getDir()));
         }
     }
 
@@ -70,7 +70,7 @@ public class Revolver : Gun
 
             currentAmmo -= 1;
 
-            updateAmmoGui.raise(owner, new object[] { currentAmmo, data.magazineCapacity });
+            onShoot.raise(owner, new GunFiredEventData(currentAmmo, data.magazineCapacity, new Bullet[] { bh }, firePoint, getDir()));
 
             yield return new WaitForSeconds(0.25f);
         }

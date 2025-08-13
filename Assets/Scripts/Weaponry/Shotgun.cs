@@ -22,6 +22,7 @@ public class Shotgun : Gun
             primaryTimer = 0;
 
             float rot = primaryRot;
+            Bullet[] bullets = new Bullet[5];
             for (int i = 0; i < 5; i++)
             {
                 GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
@@ -35,10 +36,11 @@ public class Shotgun : Gun
                 bh.setEnemyTag(owner.tag);
                 bh.startBullet();
                 rot += math.abs(primaryRot) / 2;
+                bullets[i] = bh;
             }
 
             currentAmmo -= 1;
-            updateAmmoGui.raise(owner, new object[] { currentAmmo, data.magazineCapacity });
+            onShoot.raise(owner, new GunFiredEventData(currentAmmo, data.magazineCapacity, bullets, firePoint, getDir()));
         }
     }
 
@@ -54,6 +56,7 @@ public class Shotgun : Gun
         {
             secondaryTimer = 0;
             float rot = secondaryRot;
+            Bullet[] bullets = new Bullet[3];
             for (int i = 0; i < 3; i++)
             {
                 GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
@@ -67,10 +70,11 @@ public class Shotgun : Gun
                 bh.setEnemyTag(owner.tag);
                 bh.startBullet();
                 rot += math.abs(secondaryRot);
+                bullets[i] = bh;
             }
 
             currentAmmo -= 1;
-            updateAmmoGui.raise(owner, new object[] { currentAmmo, data.magazineCapacity });
+            onShoot.raise(owner, new GunFiredEventData(currentAmmo, data.magazineCapacity, bullets, firePoint, getDir()));
             StartCoroutine(PropelPlayer());
         }
     }

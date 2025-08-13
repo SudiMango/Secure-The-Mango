@@ -35,6 +35,11 @@ public class PlayerMovementController : MonoBehaviour
     private bool isWallSliding = false;
     private float wallSlidingSpeed = 2f;
 
+    [Header("Ladder settings")]
+    [SerializeField] private float ladderSpeed;
+    private bool isLaddered = false;
+    private bool isClimbing = false;
+
     // Wall jumping
     private bool isWallJumping = false;
     private float wallJumpDir;
@@ -44,7 +49,7 @@ public class PlayerMovementController : MonoBehaviour
     // Other
     private Vector3 mousePos = Vector3.zero;
     private bool facingRight = true;
-    public bool canMove = true;
+    private bool canMove = true;
     private PlayerManager playerManager;
 
     #endregion
@@ -82,6 +87,12 @@ public class PlayerMovementController : MonoBehaviour
             }
         }
 
+        // Ladder
+        if (isLaddered && moveDir.y > 0)
+        {
+            isClimbing = true;
+        }
+
         // Constantly check for wall slide and do it if applicable
         wallSlide();
 
@@ -95,18 +106,39 @@ public class PlayerMovementController : MonoBehaviour
         if (!canMove) return;
 
         // Move character
-        float unitDir = 0;
+        float unitDirX = 0;
         if (moveDir.x > 0)
         {
-            unitDir = 1;
+            unitDirX = 1;
         }
         else if (moveDir.x < 0)
         {
-            unitDir = -1;
+            unitDirX = -1;
         }
         if (!isWallJumping)
         {
-            rb.linearVelocityX = unitDir * moveSpeed;
+            rb.linearVelocityX = unitDirX * moveSpeed;
+        }
+
+        // Ladder
+        if (isClimbing)
+        {
+            rb.gravityScale = 0;
+
+            float unitDirY = 0;
+            if (moveDir.y > 0)
+            {
+                unitDirY = 1;
+            }
+            else if (moveDir.y < 0)
+            {
+                unitDirY = -1;
+            }
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, unitDirY * ladderSpeed);
+        }
+        else
+        {
+            rb.gravityScale = 6;
         }
     }
 
@@ -126,6 +158,23 @@ public class PlayerMovementController : MonoBehaviour
     private bool isWalled()
     {
         return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer);
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Ladder"))
+        {
+            isLaddered = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Ladder"))
+        {
+            isLaddered = false;
+            isClimbing = false;
+        }
     }
 
     // EFFECTS: returns the direction based on player's x localscale

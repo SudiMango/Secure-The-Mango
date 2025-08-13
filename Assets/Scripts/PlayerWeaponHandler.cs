@@ -5,7 +5,7 @@ public class PlayerWeaponHandler : MonoBehaviour
 {
     private PlayerManager playerManager;
 
-    public Weapon currentWeapon;
+    public Gun currentGun;
 
     void Start()
     {
@@ -20,23 +20,20 @@ public class PlayerWeaponHandler : MonoBehaviour
     // EFFECTS: callback function for when player tries to shoot their primary
     private void onPrimaryFireStarted(InputAction.CallbackContext context)
     {
-        currentWeapon.onPrimaryFire();
+        currentGun.onPrimaryFire();
     }
 
     // MODIFIES: currentWeapon
     // EFFECTS: callback function for when player tries to shoot their secondary
     private void onSecondaryFireStarted(InputAction.CallbackContext context)
     {
-        currentWeapon.onSecondaryFire();
+        currentGun.onSecondaryFire();
     }
 
     // MODIFIES: currentWeapon
     // EFFECTS: callback function for when player tries to reload their weapon
     private void onReload(InputAction.CallbackContext context)
     {
-        if (currentWeapon is Gun gun)
-        {
-            gun.onReload();
-        }
+        currentGun.onReload();
     }
 }

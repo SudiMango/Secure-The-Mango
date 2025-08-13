@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Revolver : Gun
@@ -10,15 +11,15 @@ public class Revolver : Gun
     // EFFECTS: primary method of fire, shoots 1 bullet out of gun
     public override void onPrimaryFire()
     {
-        if (!canAttack) return;
+        if (!canShoot) return;
 
         if (primaryTimer >= data.timeBetweenPrimaryFire && currentAmmo > 0 && !isReloading)
         {
             primaryTimer = 0;
 
             GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
-                                                    attackPoint.position,
-                                                    attackPoint.rotation,
+                                                    firePoint.position,
+                                                    firePoint.rotation,
                                                     WeaponManager.getInstance().bulletParent);
             Bullet bh = t_bullet.GetComponent<Bullet>();
             bh.setDamage(data.damage);
@@ -38,7 +39,7 @@ public class Revolver : Gun
     // EFFECTS: secondary method of fire, does "fan the hammer" effect on all bullets left in magazine
     public override void onSecondaryFire()
     {
-        if (!canAttack) return;
+        if (!canShoot) return;
 
         if (secondaryTimer >= data.timeBetweenSecondaryFire && currentAmmo > 0 && !isReloading)
         {
@@ -51,14 +52,14 @@ public class Revolver : Gun
     // EFFECTS: perform "fan the hammer" effect on all bullets left in magazine, damage is reduced
     private IEnumerator FanTheHammer()
     {
-        canAttack = false;
+        canShoot = false;
 
         int numRounds = currentAmmo;
         for (int i = 0; i < numRounds; i++)
         {
             GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
-                                            attackPoint.position,
-                                            attackPoint.rotation,
+                                            firePoint.position,
+                                            firePoint.rotation,
                                             WeaponManager.getInstance().bulletParent);
             Bullet bh = t_bullet.GetComponent<Bullet>();
             bh.setDamage((float)(data.damage * damageMultiplier));
@@ -74,6 +75,6 @@ public class Revolver : Gun
             yield return new WaitForSeconds(0.25f);
         }
 
-        canAttack = true;
+        canShoot = true;
     }
 }

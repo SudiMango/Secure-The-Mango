@@ -4,7 +4,7 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
 {
     public EnemyDataScriptableObject data;
 
-    public Weapon currentWeapon;
+    public Gun currentGun;
     public Rigidbody2D rb;
     public bool facingRight = true;
 

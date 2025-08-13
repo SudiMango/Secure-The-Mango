@@ -28,7 +28,7 @@ public class BasicGroundAttack : AttackBehavior
             manager.flip();
         }
 
-        if (manager.currentWeapon is Gun gun)
+        if (manager.currentGun is Gun gun)
         {
             if (gun.CurrentAmmo > 0)
             {

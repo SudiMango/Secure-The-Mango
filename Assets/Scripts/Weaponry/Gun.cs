@@ -1,11 +1,12 @@
 using System.Collections;
 using UnityEngine;
 
-public abstract class Gun : Weapon
+public abstract class Gun : MonoBehaviour
 {
     #region Variables
 
     // Public variables
+    public WeaponDataScriptableObject Data => data;
     public int CurrentAmmo => currentAmmo;
     public bool IsReloading => isReloading;
 
@@ -15,27 +16,46 @@ public abstract class Gun : Weapon
     [SerializeField] private GameEvent onReloadStarted;
     [SerializeField] private GameEvent onReloadEnded;
 
+    // Timers
+    protected float primaryTimer = 0f;
+    protected float secondaryTimer = 0f;
+
     // Other required variables
     protected int currentAmmo;
     protected bool isReloading = false;
+    protected bool canShoot = true;
+
 
     #endregion
 
     #region Unity callback functions
 
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
-
         // Set default values
+        primaryTimer = data.timeBetweenPrimaryFire;
+        secondaryTimer = data.timeBetweenSecondaryFire;
         currentAmmo = data.magazineCapacity;
 
         updateAmmoGui.raise(owner, new object[] { currentAmmo, data.magazineCapacity });
     }
 
+    private void Update()
+    {
+        // Update timers
+        primaryTimer += Time.deltaTime;
+        secondaryTimer += Time.deltaTime;
+    }
+
     #endregion
 
     #region Custom functions
+
+    // EFFECTS: primary method of fire
+    public abstract void onPrimaryFire();
+
+    // EFFECTS: secondary method of fire
+    public abstract void onSecondaryFire();
 
     // MODIFIES: self
     // EFFECTS: callback function for when player tries to reload their weapon
@@ -89,6 +109,18 @@ public abstract class Gun : Weapon
             int ammoToAdd = data.magazineCapacity - currentAmmo;
             currentAmmo += ammoToAdd;
         }
+
+    }
+
+    // EFFECTS: returns the direction depending on x localscale of root entity
+    protected int getDir()
+    {
+        if (owner.localScale.x > 0)
+        {
+            return 1;
+        }
+
+        return -1;
     }
 
     #endregion

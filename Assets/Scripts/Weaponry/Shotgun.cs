@@ -15,6 +15,8 @@ public class Shotgun : Gun
     // EFFECTS: primary method of fire, shoots 5 shotgun pellets out of gun
     public override void onPrimaryFire()
     {
+        if (!canShoot) return;
+
         if (primaryTimer >= data.timeBetweenPrimaryFire && currentAmmo > 0 && !isReloading)
         {
             primaryTimer = 0;
@@ -23,8 +25,8 @@ public class Shotgun : Gun
             for (int i = 0; i < 5; i++)
             {
                 GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
-                                                attackPoint.position,
-                                                attackPoint.rotation * Quaternion.Euler(0, 0, rot),
+                                                firePoint.position,
+                                                firePoint.rotation * Quaternion.Euler(0, 0, rot),
                                                 WeaponManager.getInstance().bulletParent);
                 Bullet bh = t_bullet.GetComponent<Bullet>();
                 bh.setDamage(data.damage);
@@ -46,6 +48,8 @@ public class Shotgun : Gun
     //          propels player towards opposite direction of fire
     public override void onSecondaryFire()
     {
+        if (!canShoot) return;
+
         if (secondaryTimer >= data.timeBetweenSecondaryFire && currentAmmo > 0 && !isReloading)
         {
             secondaryTimer = 0;
@@ -53,8 +57,8 @@ public class Shotgun : Gun
             for (int i = 0; i < 3; i++)
             {
                 GameObject t_bullet = Instantiate(WeaponManager.getInstance().bulletPrefab,
-                                                attackPoint.position,
-                                                attackPoint.rotation * Quaternion.Euler(0, 0, rot),
+                                                firePoint.position,
+                                                firePoint.rotation * Quaternion.Euler(0, 0, rot),
                                                 WeaponManager.getInstance().bulletParent);
                 Bullet bh = t_bullet.GetComponent<Bullet>();
                 bh.setDamage((float)(data.damage * damageMultiplier));
@@ -79,7 +83,7 @@ public class Shotgun : Gun
         PlayerMovementController m = plr.GetComponent<PlayerMovementController>();
         Rigidbody2D rb = plr.GetComponent<Rigidbody2D>();
 
-        Vector2 dir = attackPoint.right * -getDir();
+        Vector2 dir = firePoint.right * -getDir();
 
         m.disableMovement();
         rb.linearVelocity = dir * 15;

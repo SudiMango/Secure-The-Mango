@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class BasicGroundAttack : AttackBehavior
 {
     // EFFECTS: called when entering the state
@@ -26,13 +28,16 @@ public class BasicGroundAttack : AttackBehavior
             manager.flip();
         }
 
-        if (manager.currentGun.CurrentAmmo > 0)
+        if (manager.currentWeapon is Gun gun)
         {
-            manager.currentGun.onPrimaryFire();
-        }
-        else
-        {
-            manager.currentGun.onReload();
+            if (gun.CurrentAmmo > 0)
+            {
+                gun.onPrimaryFire();
+            }
+            else
+            {
+                gun.onReload();
+            }
         }
     }
 

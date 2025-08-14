@@ -13,6 +13,7 @@ public class PlayerManager : Singleton<PlayerManager>
     public InputAction move;
     public InputAction jump;
     public InputAction shift;
+    public InputAction interact;
 
     public InputAction up;
     public InputAction down;
@@ -30,6 +31,7 @@ public class PlayerManager : Singleton<PlayerManager>
         playerControls = new PlayerInputActions();
         move = playerControls.Player.Move;
         jump = playerControls.Player.Jump;
+        interact = playerControls.Player.Interact;
         shift = playerControls.Player.Shift;
         up = playerControls.Player.Up;
         down = playerControls.Player.Down;
@@ -44,6 +46,7 @@ public class PlayerManager : Singleton<PlayerManager>
         move.Enable();
         jump.Enable();
         shift.Enable();
+        interact.Enable();
         up.Enable();
         down.Enable();
         primaryFire.Enable();
@@ -57,6 +60,7 @@ public class PlayerManager : Singleton<PlayerManager>
         move.Disable();
         jump.Disable();
         shift.Disable();
+        interact.Disable();
         up.Disable();
         down.Disable();
         primaryFire.Disable();
@@ -68,5 +72,12 @@ public class PlayerManager : Singleton<PlayerManager>
     public Vector2 getPosition()
     {
         return player.transform.position;
+    }
+
+    // MODIFIES: player
+    // EFFECTS: sets the position of the player in the world
+    public void setPosition(Vector2 position)
+    {
+        player.transform.position = position;
     }
 }

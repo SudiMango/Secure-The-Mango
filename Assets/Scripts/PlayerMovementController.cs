@@ -35,16 +35,20 @@ public class PlayerMovementController : MonoBehaviour
     private bool isWallSliding = false;
     private float wallSlidingSpeed = 2f;
 
+    [Header("Wall jump settings")]
+    [SerializeField] private Vector2 wallJumpPower = new Vector2(8f, 16f);
+    private bool isWallJumping = false;
+    private float wallJumpDir;
+    private float wallJumpDuration = 0.4f;
+
     [Header("Ladder settings")]
     [SerializeField] private float ladderSpeed;
     private bool isLaddered = false;
     private bool isClimbing = false;
 
-    // Wall jumping
-    private bool isWallJumping = false;
-    private float wallJumpDir;
-    private float wallJumpDuration = 0.4f;
-    private Vector2 wallJumpPower = new Vector2(8f, 16f);
+    // Moving platforms
+    private MovingPlatform movingPlatform;
+    private float movingPlatformSpeed = 0f;
 
     // Other
     private Vector3 mousePos = Vector3.zero;
@@ -93,6 +97,16 @@ public class PlayerMovementController : MonoBehaviour
             isClimbing = true;
         }
 
+        // Moving platform
+        if (movingPlatform != null)
+        {
+            movingPlatformSpeed = movingPlatform.moveSpeed * movingPlatform.getDir();
+        }
+        else
+        {
+            movingPlatformSpeed = 0;
+        }
+
         // Constantly check for wall slide and do it if applicable
         wallSlide();
 
@@ -117,7 +131,7 @@ public class PlayerMovementController : MonoBehaviour
         }
         if (!isWallJumping)
         {
-            rb.linearVelocityX = unitDirX * moveSpeed;
+            rb.linearVelocityX = (unitDirX * moveSpeed) + movingPlatformSpeed;
         }
 
         // Ladder
@@ -174,6 +188,22 @@ public class PlayerMovementController : MonoBehaviour
         {
             isLaddered = false;
             isClimbing = false;
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("MovingPlatform"))
+        {
+            movingPlatform = collision.gameObject.GetComponent<MovingPlatform>();
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("MovingPlatform"))
+        {
+            movingPlatform = null;
         }
     }
 

@@ -63,7 +63,7 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
         Vector3 dir = PlayerManager.getInstance().getPosition() - (Vector2)transform.position;
         dir.Normalize();
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, 20, ~LayerMask.GetMask("Bullet", "OneWayPlatform", "Enemy"));
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, 20, ~LayerMask.GetMask("Bullet", "OneWayPlatform", "Enemy", "Ladder"));
 
         if (hit.collider != null)
         {

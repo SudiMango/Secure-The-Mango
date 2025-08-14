@@ -65,8 +65,8 @@ public class PlayerMovementController : MonoBehaviour
     {
         playerManager = PlayerManager.getInstance();
 
-        playerManager.jump.performed += onJump;
-        playerManager.shift.performed += onDash;
+        playerManager.jump.started += onJump;
+        playerManager.shift.started += onDash;
     }
 
     // Update is called once per frame

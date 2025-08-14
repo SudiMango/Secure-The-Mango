@@ -10,29 +10,13 @@ public class OneWayPlatformHandler : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask platformLayer;
 
+    private PlayerManager playerManager;
     private GameObject currOneWayPlatform = null;
 
-    // Player controls
-    private PlayerInputActions playerControls;
-    private InputAction platformDown;
-
-    void Awake()
+    void Start()
     {
-        playerControls = new PlayerInputActions();
-    }
-
-    // Enable player input systems
-    void OnEnable()
-    {
-        platformDown = playerControls.Player.Down;
-        platformDown.Enable();
-        platformDown.performed += onPlatformDown;
-    }
-
-    // Disable player input systems
-    void OnDisable()
-    {
-        platformDown.Disable();
+        playerManager = PlayerManager.getInstance();
+        playerManager.down.started += onPlatformDown;
     }
 
     // EFFECTS: returns true if player is standing on one way platform, returns false otherwise
@@ -54,8 +38,7 @@ public class OneWayPlatformHandler : MonoBehaviour
     // EFFECTS: makes player go down from platform when down input action is performed
     private void onPlatformDown(InputAction.CallbackContext context)
     {
-        bool canProceed = isOnPlatform();
-        if (canProceed)
+        if (isOnPlatform())
         {
             StartCoroutine(DisableOneWayPlatformCollision());
         }

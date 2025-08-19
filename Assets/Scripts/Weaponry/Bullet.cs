@@ -29,7 +29,10 @@ public class Bullet : MonoBehaviour
             damageEnemy(collision.gameObject);
             Destroy(gameObject);
         }
-        else if (collision.gameObject.layer != LayerMask.NameToLayer("OneWayPlatform") && collision.gameObject.layer != LayerMask.NameToLayer("Bullet"))
+        else if (collision.gameObject.layer != LayerMask.NameToLayer("OneWayPlatform")
+                && collision.gameObject.layer != LayerMask.NameToLayer("Bullet")
+                && collision.gameObject.layer != LayerMask.NameToLayer("Ladder")
+                && collision.gameObject.layer != LayerMask.NameToLayer("Teleporter"))
         {
             if (!collision.gameObject.CompareTag(ownerTag))
             {

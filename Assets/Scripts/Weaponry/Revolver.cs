@@ -31,6 +31,7 @@ public class Revolver : Gun
             currentAmmo -= 1;
 
             onShoot.raise(owner, new GunFiredEventData(currentAmmo, data.magazineCapacity, new Bullet[] { bh }, firePoint, getDir()));
+            muzzleEffect.Play();
         }
     }
 
@@ -71,6 +72,7 @@ public class Revolver : Gun
             currentAmmo -= 1;
 
             onShoot.raise(owner, new GunFiredEventData(currentAmmo, data.magazineCapacity, new Bullet[] { bh }, firePoint, getDir()));
+            muzzleEffect.Play();
 
             yield return new WaitForSeconds(0.25f);
         }

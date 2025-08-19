@@ -41,6 +41,7 @@ public class Shotgun : Gun
 
             currentAmmo -= 1;
             onShoot.raise(owner, new GunFiredEventData(currentAmmo, data.magazineCapacity, bullets, firePoint, getDir()));
+            muzzleEffect.Play();
         }
     }
 
@@ -75,6 +76,7 @@ public class Shotgun : Gun
 
             currentAmmo -= 1;
             onShoot.raise(owner, new GunFiredEventData(currentAmmo, data.magazineCapacity, bullets, firePoint, getDir()));
+            muzzleEffect.Play();
             StartCoroutine(PropelPlayer());
         }
     }

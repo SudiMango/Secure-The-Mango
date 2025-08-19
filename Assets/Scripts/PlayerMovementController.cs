@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,10 +13,12 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private TrailRenderer tr;
 
     [Header("Movement settings")]
     [SerializeField] private float moveSpeed = 5f;
     private Vector2 moveDir = Vector2.zero;
+    [SerializeField] private ParticleSystem footstepEffect;
 
     [Header("Jump settings")]
     [SerializeField] private float jumpForce = 5f;
@@ -55,6 +58,8 @@ public class PlayerMovementController : MonoBehaviour
     private bool facingRight = true;
     private bool canMove = true;
     private PlayerManager playerManager;
+    private float unitDirX = 0;
+
 
     #endregion
 
@@ -112,6 +117,22 @@ public class PlayerMovementController : MonoBehaviour
 
         // Constantly check for wall jump and do it if applicable
         wallJump();
+
+        // Enable footstep particles
+        if (Math.Abs(unitDirX) > 0 && isGrounded())
+        {
+            if (!footstepEffect.isEmitting)
+            {
+                footstepEffect.Play();
+            }
+        }
+        else
+        {
+            if (footstepEffect.isEmitting)
+            {
+                footstepEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            }
+        }
     }
 
     void FixedUpdate()
@@ -120,7 +141,6 @@ public class PlayerMovementController : MonoBehaviour
         if (!canMove) return;
 
         // Move character
-        float unitDirX = 0;
         if (moveDir.x > 0)
         {
             unitDirX = 1;
@@ -128,6 +148,10 @@ public class PlayerMovementController : MonoBehaviour
         else if (moveDir.x < 0)
         {
             unitDirX = -1;
+        }
+        else
+        {
+            unitDirX = 0;
         }
         if (!isWallJumping)
         {
@@ -284,9 +308,11 @@ public class PlayerMovementController : MonoBehaviour
         rb.linearVelocity = new Vector2(getDir() * dashForce, 0);
         float prevGravityScale = rb.gravityScale;
         rb.gravityScale = 0;
+        tr.emitting = true;
         yield return new WaitForSeconds(dashTime);
         isDashing = false;
         rb.gravityScale = prevGravityScale;
+        tr.emitting = false;
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
     }

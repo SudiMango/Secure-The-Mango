@@ -13,6 +13,7 @@ public abstract class Gun : MonoBehaviour
     [Header("References")]
     [SerializeField] protected WeaponDataScriptableObject data;
     [SerializeField] protected Transform firePoint;
+    [SerializeField] protected ParticleSystem muzzleEffect;
     [SerializeField] protected Transform owner;
 
     // Events

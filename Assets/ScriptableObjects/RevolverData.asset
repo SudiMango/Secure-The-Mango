@@ -19,5 +19,5 @@ MonoBehaviour:
   timeBetweenSecondaryFire: 4
   magazineCapacity: 6
   timeToReload: 2.5
-  pos: {x: -0.021, y: 0, z: 0}
+  pos: {x: 1.22, y: -0.15, z: 0}
   rot: {x: 0, y: 0, z: 0}

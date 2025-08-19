@@ -11,8 +11,10 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
     [Header("References")]
     [SerializeField] private Transform edgeCheck;
     [SerializeField] private Transform wallCheck;
+    [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private ParticleSystem footstepEffect;
 
     // Enemy states
     public enum EnemyStates
@@ -32,7 +34,34 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
         currentState = states[EnemyStates.PatrollingState];
     }
 
+    public override void Update()
+    {
+        base.Update();
+
+        // Enable footstep particles
+        if (Mathf.Abs(rb.linearVelocityX) > 0 && isGrounded())
+        {
+            if (!footstepEffect.isEmitting)
+            {
+                footstepEffect.Play();
+            }
+        }
+        else
+        {
+            if (footstepEffect.isEmitting)
+            {
+                footstepEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            }
+        }
+    }
+
     #region Custom functions
+
+    // EFFECTS: return true if enemy is grounded, otherwise return false
+    public bool isGrounded()
+    {
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+    }
 
     // EFFECTS: returns true if there is still ground in front of the enemy
     public bool isNearGround()

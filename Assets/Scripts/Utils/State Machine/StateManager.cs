@@ -21,7 +21,7 @@ public abstract class StateManager<TState, TManager> : MonoBehaviour
         currentState.enterState();
     }
 
-    void Update()
+    public virtual void Update()
     {
         if (isTransitioningState) return;
 

@@ -12,7 +12,8 @@ public class CameraController : MonoBehaviour
 
     [Header("Camera shake settings")]
     [SerializeField] private AnimationCurve curve;
-    public float duration;
+    [SerializeField] private float duration;
+    private Vector3 shakeOffset = Vector3.zero;
 
     [Header("Events")]
     [SerializeField] private GameEvent onAttack;
@@ -20,18 +21,12 @@ public class CameraController : MonoBehaviour
     // Update camera position to player
     void Update()
     {
-        Vector3 lookAdjustedOffset = Vector3.zero;
-        if (target.localScale.x > 0)
-        {
-            lookAdjustedOffset = offset;
-        }
-        else if (target.localScale.x < 0)
-        {
-            lookAdjustedOffset = new Vector3(offset.x * -1, offset.y, offset.z);
-        }
+        Vector3 lookAdjustedOffset = (target.localScale.x > 0) ? offset : new Vector3(offset.x * -1, offset.y, offset.z);
 
         Vector3 targetPosition = target.position + lookAdjustedOffset;
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
+        Vector3 smoothPos = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
+
+        transform.position = smoothPos + shakeOffset;
     }
 
     // MODIFIES: camera
@@ -48,17 +43,16 @@ public class CameraController : MonoBehaviour
     // EFFECTS: shakes the camera
     private IEnumerator shake()
     {
-        Vector3 startPos = transform.localPosition;
         float elapsedTime = 0;
 
         while (elapsedTime <= duration)
         {
             elapsedTime += Time.deltaTime;
             float strength = curve.Evaluate(elapsedTime / duration);
-            transform.localPosition = startPos + Random.insideUnitSphere * strength;
+            shakeOffset = Random.insideUnitSphere * strength;
             yield return null;
         }
 
-        transform.localPosition = startPos;
+        shakeOffset = Vector3.zero;
     }
 }

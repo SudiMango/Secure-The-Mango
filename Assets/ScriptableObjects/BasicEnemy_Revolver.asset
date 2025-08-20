@@ -16,8 +16,11 @@ MonoBehaviour:
   chaseSpeed: 5
   attackSpeed: 0
   playerDetectionRange: 10
-  playerAttackRange: 1
-  patrolWalkRange: 3
+  playerAttackRange: 5
+  patrolWalkRange: 5
   weaponPrefab: {fileID: 3206120388651851097, guid: 1d0e727593b7d764e802820940fe72a6, type: 3}
-  damage: 10
-  dropsOnDeath: []
+  damage: 15
+  dropsOnDeath:
+  - {fileID: 8528691961419177072, guid: dfb9eee8eba6ede4985c3e8b66067343, type: 3}
+  - {fileID: 8528691961419177072, guid: dfb9eee8eba6ede4985c3e8b66067343, type: 3}
+  - {fileID: 8528691961419177072, guid: dfb9eee8eba6ede4985c3e8b66067343, type: 3}

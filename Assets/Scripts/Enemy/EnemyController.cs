@@ -16,6 +16,9 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private ParticleSystem footstepEffect;
 
+    [Header("Events")]
+    [SerializeField] private GameEvent onShoot;
+
     // Enemy states
     public enum EnemyStates
     {
@@ -136,6 +139,19 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
     public GameObject getParent()
     {
         return gameObject;
+    }
+
+    // MODIFIES: bullet
+    // EFFECTS: sets the bullet damage for the enemy's gunshot
+    public void setBulletDamage(Component sender, object t_data)
+    {
+        if (!sender.gameObject.CompareTag("Enemy")) return;
+
+        GunFiredEventData _data = t_data as GunFiredEventData;
+        foreach (Bullet b in _data.currentBullets)
+        {
+            b.setDamage(data.damage);
+        }
     }
 
     #endregion

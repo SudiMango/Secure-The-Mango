@@ -43,7 +43,21 @@ public class BasicGroundChase : ChaseBehavior
     // EFFECTS: called on default FixedUpdate method
     public override void onPhysicsUpdate(EnemyController manager)
     {
-        manager.rb.linearVelocityX = canMove ? manager.data.chaseSpeed * manager.getDir() : 0;
+        if (canMove)
+        {
+            if (!manager.isNearGround())
+            {
+                manager.rb.linearVelocityX = 0;
+            }
+            else
+            {
+                manager.rb.linearVelocityX = manager.data.chaseSpeed * manager.getDir();
+            }
+        }
+        else
+        {
+            manager.rb.linearVelocityX = 0;
+        }
     }
 
     // EFFECTS: returns next state if conditions are met, otherwise returns current state

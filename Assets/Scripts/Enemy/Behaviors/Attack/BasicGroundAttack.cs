@@ -19,32 +19,31 @@ public class BasicGroundAttack : AttackBehavior
     // EFFECTS: called on default Update method
     public override void onFrameUpdate(EnemyController manager)
     {
-        if (PlayerManager.getInstance().getPosition().x < manager.getParent().transform.position.x && manager.facingRight)
+        float plrX = PlayerManager.getInstance().getPosition().x;
+        float enemyX = manager.getParent().transform.position.x;
+        if (plrX < enemyX && manager.facingRight)
         {
             manager.flip();
         }
-        else if (PlayerManager.getInstance().getPosition().x > manager.getParent().transform.position.x && !manager.facingRight)
+        else if (plrX > enemyX && !manager.facingRight)
         {
             manager.flip();
         }
 
-        if (manager.currentGun is Gun gun)
+        if (manager.currentGun.CurrentAmmo > 0)
         {
-            if (gun.CurrentAmmo > 0)
-            {
-                gun.onPrimaryFire();
-            }
-            else
-            {
-                gun.onReload();
-            }
+            manager.currentGun.onPrimaryFire();
+        }
+        else
+        {
+            manager.currentGun.onReload();
         }
     }
 
     // EFFECTS: called on default FixedUpdate method
     public override void onPhysicsUpdate(EnemyController manager)
     {
-        manager.rb.linearVelocityX = 0;
+        manager.rb.linearVelocityX = manager.data.attackSpeed;
     }
 
     // EFFECTS: returns next state if conditions are met, otherwise returns current state

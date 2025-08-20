@@ -16,7 +16,7 @@ public class CameraController : MonoBehaviour
     private Vector3 shakeOffset = Vector3.zero;
 
     [Header("Events")]
-    [SerializeField] private GameEvent onAttack;
+    [SerializeField] private GameEvent onShoot;
 
     // Update camera position to player
     void Update()

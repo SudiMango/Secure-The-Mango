@@ -90,6 +90,6 @@ public class Bullet : MonoBehaviour
     private void damageEnemy(GameObject enemy)
     {
         Health h = enemy.GetComponent<Health>();
-        h.setCurrentHealth(h.getCurrentHealth() - damage);
+        h.updateCurrentHealth(-damage);
     }
 }

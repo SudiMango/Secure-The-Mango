@@ -5,8 +5,6 @@ using UnityEngine;
 public class Revolver : Gun
 {
 
-    private float damageMultiplier = 0.7f;
-
     // MODIFIES: self, bullet
     // EFFECTS: primary method of fire, shoots 1 bullet out of gun
     public override void onPrimaryFire()
@@ -50,7 +48,7 @@ public class Revolver : Gun
     }
 
     // MODIFIES: self, bullet
-    // EFFECTS: perform "fan the hammer" effect on all bullets left in magazine, damage is reduced
+    // EFFECTS: perform "fan the hammer" effect on all bullets left in magazine
     private IEnumerator FanTheHammer()
     {
         canShoot = false;
@@ -63,7 +61,7 @@ public class Revolver : Gun
                                             firePoint.rotation,
                                             WeaponManager.getInstance().bulletParent);
             Bullet bh = t_bullet.GetComponent<Bullet>();
-            bh.setDamage((float)(data.damage * damageMultiplier));
+            bh.setDamage(data.damage);
             bh.setSpeed(data.bulletSpeed);
             bh.setDir(getDir());
             bh.setEnemyTag(owner.tag);

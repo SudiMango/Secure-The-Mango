@@ -21,6 +21,6 @@ MonoBehaviour:
   weaponPrefab: {fileID: 3206120388651851097, guid: 1d0e727593b7d764e802820940fe72a6, type: 3}
   damage: 15
   dropsOnDeath:
-  - {fileID: 8528691961419177072, guid: dfb9eee8eba6ede4985c3e8b66067343, type: 3}
-  - {fileID: 8528691961419177072, guid: dfb9eee8eba6ede4985c3e8b66067343, type: 3}
-  - {fileID: 8528691961419177072, guid: dfb9eee8eba6ede4985c3e8b66067343, type: 3}
+  - {fileID: 674390222081606084, guid: 6461dee364e44b64b8a9c3247c641b4e, type: 3}
+  - {fileID: 8165889701864182003, guid: 63ae7c26fdd1709428b792635b6ef1c9, type: 3}
+  - {fileID: 2617761900997406403, guid: 30f7a7a2b15d818459639e58c109d967, type: 3}

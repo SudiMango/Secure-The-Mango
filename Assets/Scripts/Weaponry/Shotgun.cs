@@ -5,11 +5,8 @@ using UnityEngine;
 public class Shotgun : Gun
 {
 
-    private float primaryRot = -14;
-    private float secondaryRot = -7;
-
-    private float damageMultiplier = 1.5f;
-    private float speedMultiplier = 1.5f;
+    private readonly float primaryRot = -14;
+    private readonly float secondaryRot = -7;
 
     // MODIFIES: self, bullet
     // EFFECTS: primary method of fire, shoots 5 shotgun pellets out of gun
@@ -47,7 +44,7 @@ public class Shotgun : Gun
 
 
     // MODIFIES: self, bullet
-    // EFFECTS: secondary method of fire, does a faster three-shot higher damage pellet and 
+    // EFFECTS: secondary method of fire, does a three-shot pellet and 
     //          propels player towards opposite direction of fire
     public override void onSecondaryFire()
     {
@@ -65,8 +62,8 @@ public class Shotgun : Gun
                                                 firePoint.rotation * Quaternion.Euler(0, 0, rot),
                                                 WeaponManager.getInstance().bulletParent);
                 Bullet bh = t_bullet.GetComponent<Bullet>();
-                bh.setDamage((float)(data.damage * damageMultiplier));
-                bh.setSpeed((float)(data.bulletSpeed * speedMultiplier));
+                bh.setDamage(data.damage);
+                bh.setSpeed(data.bulletSpeed);
                 bh.setDir(getDir());
                 bh.setEnemyTag(owner.tag);
                 bh.startBullet();

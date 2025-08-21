@@ -20,4 +20,16 @@ public class WeaponManager : Singleton<WeaponManager>
 
         onTotalAmmoChanged.raise(null, totalAmmo);
     }
+
+    // REQUIRES: data to be of type int
+    // MODIFIES: WeaponManager
+    // EFFECTS: adds additional ammo to totalAmmo
+    public void onAmmoRefill(Component sender, object data)
+    {
+        PickableItem item = sender as PickableItem;
+        if (item.getItemType() != PickableItem.ItemType.AmmoRefill) return;
+
+        int ammoToAdd = (int)data;
+        setTotalAmmo(ammoToAdd);
+    }
 }

@@ -80,4 +80,9 @@ public class PlayerManager : Singleton<PlayerManager>
     {
         player.transform.position = position;
     }
+
+    public Health getHealth()
+    {
+        return player.GetComponent<Health>();
+    }
 }

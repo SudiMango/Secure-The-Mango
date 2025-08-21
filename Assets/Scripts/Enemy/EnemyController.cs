@@ -16,9 +16,6 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private ParticleSystem footstepEffect;
 
-    [Header("Events")]
-    [SerializeField] private GameEvent onShoot;
-
     // Enemy states
     public enum EnemyStates
     {
@@ -143,7 +140,7 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
 
     // MODIFIES: bullet
     // EFFECTS: sets the bullet damage for the enemy's gunshot
-    public void setBulletDamage(Component sender, object t_data)
+    public void onShoot(Component sender, object t_data)
     {
         if (!sender.gameObject.CompareTag("Enemy")) return;
 
@@ -152,6 +149,25 @@ public class EnemyController : StateManager<EnemyController.EnemyStates, EnemyCo
         {
             b.setDamage(data.damage);
         }
+    }
+
+    // MODIFIES: self, dropsOnDeath
+    // EFFECTS: deletes self and drops items on death
+    public void onDeath(Component sender, object t_data)
+    {
+        if (!sender.Equals(transform) || !sender.gameObject.CompareTag("Enemy")) return;
+
+        foreach (GameObject item in data.dropsOnDeath)
+        {
+            float rand = Random.value;
+            Debug.Log(rand);
+            if (rand < 0.5)
+            {
+                Instantiate(item, transform.position, transform.rotation);
+            }
+        }
+
+        Destroy(gameObject);
     }
 
     #endregion

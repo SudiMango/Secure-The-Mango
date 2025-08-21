@@ -68,7 +68,6 @@ public abstract class Gun : MonoBehaviour
     public void onReload()
     {
         if (isReloading || currentAmmo >= data.magazineCapacity || WeaponManager.getInstance().totalAmmo <= 0) return;
-        if (!owner) return;
 
         StartCoroutine(StartReload());
     }
